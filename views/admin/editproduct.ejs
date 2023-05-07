@@ -1,0 +1,131 @@
+
+<%- include('../partials/adminheader') %>
+        <body>
+            <style>
+                .square-image {
+                    width: 70px;
+                    height: 90px;
+                    object-fit: fill;
+                }
+            </style>
+
+
+            <section class="content-main">
+                <form action="/admin/edit-product" method="post"  enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="content-header">
+                                <h2 class="content-title">Edit Product</h2>
+                                <div>
+                                    <button id="updateProductBtn" onclick="showNotification()"
+                                        class="btn btn-md rounded font-sm hover-up">Save</button>
+
+
+
+
+                                    <!-- <button class="btn btn-md rounded font-sm hover-up">Publich</button> -->
+                                </div>
+                            </div>
+                        </div>
+                        <%= console.log(product) %>
+                            <div class="col-lg-6">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="mb-4">
+                                            <label for="product_title" class="form-label">Product title</label>
+                                            <input type="text" placeholder="<%= product.productName %>"
+                                                class="form-control" name="productName" id="productName"
+                                                value="<%= product.productName %>" required>
+                                            
+                                        </div>
+                                        <div class="row gx-3">
+                                            <div class="col-md-4  mb-3">
+                                                <label for="productQuantity" class="form-label">Quantity</label>
+                                                <input type="number" placeholder="<%= product.productQuantity %>"
+                                                    class="form-control" name="productQuantity" id="productQuantity "
+                                                    value="<%= product.productQuantity %>" min="0" >
+                                            </div>
+
+                                            <div class="col-md-4  mb-3">
+                                                <label for="product_color" class="form-label">Color</label>
+                                                <input type="text" placeholder="<%= product.productColor %>"
+                                                    class="form-control" name="productColor"
+                                                    value="<%= product.productColor %>" required>
+                                            </div>
+                                            <div class="col-md-4  mb-3">
+                                                <label for="product_size" class="form-label">Size</label>
+                                                <input type="text" placeholder="<%= product.productSize %>"
+                                                    class="form-control" name="productSize" id="product_size"
+                                                    value="<%= product.productSize %>" required>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div> <!-- card end// -->
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div>
+                                            <label class="form-label">Description</label>
+                                            <input placeholder="<%= product.productDesc %>" class="form-control"
+                                                rows="4" name="productDescription" name="productDescription"
+                                                value="<%= product.productDes %>" required></input>
+                                            <input type="hidden" class="form-control" name="id" id="floatingInputGrid" placeholder="Name" value="<%= product._id %>">
+                                        </div>
+                                    </div>
+                                </div> <!-- card end// -->
+                                
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h4>Media</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="input-upload">
+                                            <img src="/upload/<%=product.productImage %>" alt="">
+                                            
+                                            <input class="form-control" type="file" name="productImage">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="mb-4">
+                                            <label class="form-label">Price</label>
+                                            <input type="text" placeholder="<%= product.price %>"
+                                                class="form-control" name="productPrice"
+                                                value="<%= product.price %>" required>
+                                        </div>
+
+
+                                        <hr>
+                                        <h5 class="mb-3">Categories</h5>
+                                    </div>
+                                    <!-- <div class="card-body">
+                                        <div class="row gx-2">
+                                            <div class="col-sm-6 mb-3">
+                                                <label class="form-label">Name</label>
+                                                <select class="form-select"name="category_id">
+                                                   
+                                                </select>
+                                            </div>
+
+
+                                        </div> 
+                                    </div> -->
+                                </div>
+
+
+
+
+                            </div> <!-- card end// -->
+                    </div>
+                    </div>
+                </form>
+
+            </section>
+
+       </body>
+
+       <%- include('../partials/adminfooter') %>
+

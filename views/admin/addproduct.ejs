@@ -1,0 +1,96 @@
+<%- include('../partials/adminheader') %>
+        <section class="content-main">
+            <form action="/admin/addproduct" method="post" enctype="multipart/form-data">
+            <div class="row">
+            
+                <div class="col-9">
+                    <div class="content-header">
+                        <h2 class="content-title">Add New Product</h2>
+                        <div>
+                            <button class="btn btn-light rounded font-sm mr-5 text-body hover-up">Save to draft</button>
+                            <button  class="btn btn-md rounded font-sm hover-up">Add</button>
+                        </div>
+                    </div>
+                </div>
+             
+                <div class="col-lg-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                       
+                        </div>
+                        <div class="card-body">
+                            <form action="/admin/addproduct" method="post" enctype="multipart/form-data">
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Product title</label>
+                                    <input type="text" placeholder="Type here" class="form-control" name="productName" id="product_name">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Full description</label>
+                                    <textarea placeholder="Type here" class="form-control" name="productDes" rows="4"></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="mb-4">
+                                            <label class="form-label">Price</label>
+                                                <input placeholder="$" type="text" name="price" class="form-control">
+                                           
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="mb-4">
+                                            <label class="form-label">Color</label>
+                                            <input  type="text" class="form-control" name="productColor">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <label class="form-label">Size</label>
+                                        <select class="form-select"  name="productSize">
+                                            <option value="M"> M</option>
+                                            <option value="L"> L</option>
+                                            <option value="XL"> XL </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div> <!-- card end// -->
+                    
+                </div>
+                <div class="col-lg-3">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Media</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-upload">
+                                <img src="asset/imgs/theme/upload.svg" alt="">
+                                <input class="form-control" type="file" name="productImage">
+                            </div>
+                        </div>
+                    </div> <!-- card end// -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Category</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row gx-2">
+                                <div class="col-sm-6 mb-3">
+                                    <label class="form-label">Name</label>
+                                    <select class="form-select"name="category_id">
+                                        <% category.forEach(function(category) { %>
+                                            <option value="<%= category._id %>">
+                                              <%= category.categoryName %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                </div>
+                            </div> <!-- row.// -->
+                        </div>
+                    </div> <!-- card end// -->
+                    
+                </div>
+            
+            </div>
+          </form>
+        </section> <!-- content-main end// -->
+        <%- include('../partials/adminfooter') %>

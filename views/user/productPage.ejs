@@ -1,0 +1,127 @@
+<%- include('../partials/userheader') %>
+
+<main class="main">
+  <div class="page-content">
+    <div class="container">
+      <h4 class="text-center mt-3 mb-5">ALL CATEGORIES</h4>
+      <!-- End .title -->
+
+      <div class="row">
+        <% data.forEach(category=> { %>
+        <div class="col-md-6">
+          <div class="banner banner-cat">
+            <a href="#">
+              <img src="assets/images/category/banner-2.jpg" alt="Banner" />
+            </a>
+
+            <div class="banner-content">
+              <h3 class="banner-title"><%=category.category%></h3>
+              <!-- End .banner-title -->
+              <h4 class="banner-subtitle">18 Products</h4>
+              <!-- End .banner-subtitle -->
+              <a href="#" class="banner-link">Shop Now</a>
+            </div>
+            <!-- End .banner-content -->
+          </div>
+          <!-- End .banner -->
+        </div>
+        <% }); %>
+      </div>
+      <hr class="mt-3 mb-5" />
+      <h2 class="title text-center mb-3">NEW ARRIVALS</h2>
+      <!-- End .title -->
+
+
+    <div class="row ">
+       
+        <% data.forEach(function(category) { %>
+          
+          <% let count = 0; %>
+          <% category.product.forEach(function(product) { %>
+            <% if (count % 4 == 0) { %>
+        <div class="row  ">
+            <% } %>
+            <div class="col-lg-3">
+              <div class="product product-2">
+                <figure class="product-media">
+                  <a href="product.html">
+                    <% if (product.image && product.image.length> 0) { %>
+                      <img src="upload/<%=product.image %>" class="product-image" alt="It" width="50px" />
+                    <% } else { %>
+                      <img src="upload/img.webp" alt="Default Image" class="product-image" />
+                    <% } %>
+                  </a>
+      
+                  <div class="product-action-vertical">
+                    <a  class="btn-product-icon btn-wishlist btn-expandable addtowhishlist" data-whishlist="<%=product.id %>"><span>add to wishlist</span></a>
+                  </div>
+                  <!-- End .product-action -->
+      
+                  <div class="product-action product-action-dark">
+                    <button class="btn-product btn-cart addtocartbutton"  value="<%=product.id %>" ><span>add to cart</span></button>
+                    <a href="popup/quickView.ejs" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                  </div>
+                  <!-- End .product-action -->
+                </figure>
+                <!-- End .product-media -->
+      
+                <div class="product-body">
+                  <div class="product-title">
+                    <a href="product.html"><%= product.product_name %></a>
+                  </div>
+                  <!-- End .product-title -->
+                  <div class="product-price"><%= product.product_price %></div>
+                  <!-- End .product-price -->
+                </div>
+                <!-- End .product-body -->
+              </div>
+              <!-- End .product -->
+            </div>
+            <% count++; %>
+          <% }); %>
+          </div>
+        <% }); %>
+
+    </div>
+  </div>
+</main>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$('.addtocartbutton').click(function(){
+    console.log("button clicked");
+    let productid = $(this).val();
+  console.log(productid);
+//    data = {"productid":productid}
+    $.ajax({
+        url:'/addtocart?id='+ productid,
+        type:'GET',
+        success: function(response){
+          console.log(response.data);
+        },
+        error: function(error) {
+            console.log('Error: ' + error);
+          }
+    })
+})
+
+// whishlist script
+$('.addtowhishlist').click(function(){
+    console.log("button clicked");
+    let productid = $(this).data('whishlist');
+  console.log(productid);
+
+    $.ajax({
+        url:'/addtowhishlist?id='+ productid,
+        type:'GET',
+        success: function(response){
+          console.log(response.data);
+        },
+        error: function(error) {
+            console.log('Error: ' + error);
+          }
+    })
+})
+
+</script>
+<%- include('../partials/userfooter') %>

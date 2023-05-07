@@ -1,0 +1,69 @@
+<%- include('../partials/adminheader') %>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Categories </h2>
+                    <p>Add, edit or delete a category</p>
+                </div>
+                <div>
+                    <input type="text" placeholder="Search Categories" class="form-control bg-white">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <form>
+                                <div class="mb-4">
+                                    <label for="product_name" class="form-label">Name</label>
+                                    <input type="text" placeholder="Type here" class="form-control" id="product_name" />
+                                </div>
+
+                                
+                            
+                                <div class="mb-4">
+                                    <label class="form-label">Description</label>
+                                    <textarea placeholder="Type here" class="form-control"></textarea>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary">Create category</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">
+                                            </th>
+                                          
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                           
+                                            <th class="text-end">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% count=1 %>   
+                                        <% category.forEach(function(category) { %>
+                                            <tr>
+                                              <td><%= count%></td>
+                                              <td> <%= category.categoryName %></td>
+                                              <td> <%= category.categoryName%></td> 
+                                              <td class="text-end">
+                                                <a href="/admin/deleteCategory/<%= category._id %>" class="btn btn-outline-danger rounded mt-15" style="margin-right: 10px;">Delete</a>
+                                               
+                                            </td>
+                                            </tr>
+                                           <% count++ %>
+                                           <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- .col// -->
+                    </div> <!-- .row // -->
+                </div> <!-- card body .// -->
+            </div> <!-- card .// -->
+        </section> <!-- content-main end// -->
+        <%- include('../partials/adminfooter') %>

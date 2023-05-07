@@ -1,0 +1,202 @@
+<%- include('../partials/userheader') %>
+
+        <main class="main">
+        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        		<div class="container">
+        			<h1 class="page-title">My Account<span>Shop</span></h1>
+        		</div><!-- End .container -->
+        	</div><!-- End .page-header -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+               
+            </nav><!-- End .breadcrumb-nav -->
+
+            <div class="page-content">
+            	<div class="dashboard">
+	                <div class="container">
+	                	<div class="row">
+	                		<aside class="col-md-4 col-lg-3">
+	                			<ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+								    <li class="nav-item">
+								        <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Orders</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">Downloads</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" href="#">Sign Out</a>
+								    </li>
+								</ul>
+	                		</aside><!-- End .col-lg-3 -->
+
+	                		<div class="col-md-8 col-lg-9">
+	                			<div class="tab-content">
+								    <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+                                       
+                                        <div class="d-flex align-items-center ms-4 mb-4">
+                                            <p > <span class="font-weight-normal text-dark">Hello <%= user.name%></span></p>
+                                            <div class="position-relative ">
+                                                <image class="rounded-circle" src="/upload/blackpolo.webp" alt="" style="width: 85px; height: 90px;">
+                                                                                                       
+                                            </div>
+                                            
+                                        </div>
+								    	<p>Full Name : <span class="font-weight-normal text-dark"><%= user.name%></span>
+								    	<p>Email : <span class="font-weight-normal text-dark"><%= user.email%></span> 
+                                        <p>Phone number : <span class="font-weight-normal text-dark"><%= user.phone%></span>
+                                        <p>Address : <span class="font-weight-normal text-dark"><%= user.address%></span>  
+                                        <br>
+                                        <a href="#tab-orders" class="tab-trigger-link link-underline">recent orders</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p>
+								    </div><!-- .End .tab-pane -->
+
+								    <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
+								    	<p>No order has been made yet.</p>
+								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+								    </div><!-- .End .tab-pane -->
+
+								    <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
+								    	<p>No downloads available yet.</p>
+								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+								    </div><!-- .End .tab-pane -->
+
+								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+								    	<p>The following addresses will be used on the checkout page by default.</p>
+										<%if(user.address !== undefined){%> 
+								    	<div class="row">
+								    		<div class="col-lg-6">
+								    			<div class="card card-dashboard">
+								    				<div class="card-body">
+								    					<h3 class="card-title"> Address</h3><!-- End .card-title -->
+
+														<p><%=user.name%><br>
+													    <p></p>		
+													
+														<a class="nav-link" id="tab-add-link" data-toggle="tab" href="#tab-add" role="tab" aria-controls="tab-add" aria-selected="false">Edit <i class="icon-edit"></i></a></p>
+								    				</div><!-- End .card-body -->
+								    			</div><!-- End .card-dashboard -->
+								    		</div><!-- End .col-lg-6 -->
+											<%}else{ %> 
+												
+												<div class="row">
+													<div class="col-lg-6">
+														<div class="card card-dashboard">
+															<div class="card-body">
+																<h3 class="card-title"> Shipping Address</h3><!-- End .card-title -->
+		
+																<p>Add your address<br>
+															
+																<a class="nav-link" id="tab-add-link" data-toggle="tab" href="#tab-add" role="tab" aria-controls="tab-add" aria-selected="false">Edit <i class="icon-edit"></i></a></p>
+															</div><!-- End .card-body -->
+														</div><!-- End .card-dashboard -->
+													</div><!-- End .col-lg-6 -->
+												
+												
+												
+												
+												
+												
+												<%} %>
+								    	
+
+                                            <div class="tab-pane fade" id="tab-add" role="tabpanel" aria-labelledby="tab-account-link">
+                                                <form action="/addaddress">
+                                                    <label>Name  <span style="color: red;"> *</span></label>
+                                                    <div class="row">
+                                                        <input type="text" class="form-control" required>
+                                                        <div class="col-sm-6">
+                                                         <label>Adress Line 1 <span style="color: red;"> *</span></label>
+                                                        <input type="text" class="form-control" required>
+                                                        </div><!-- End .col-sm-6 -->
+        
+                                                        <div class="col-sm-6">
+                                                            <label>Adress Line 2 <span style="color: red;"> *</span></label>
+                                                            <input type="text" class="form-control" required>
+                                                        </div><!-- End .col-sm-6 -->
+                                                    </div><!-- End .row -->
+                                                    <div class="row">
+                                                       
+                                                        <div class="col-sm-6">
+                                                         <label>City <span style="color: red;"> *</span></label>
+                                                        <input type="text" class="form-control" required>
+                                                        </div><!-- End .col-sm-6 -->
+        
+                                                        <div class="col-sm-6">
+                                                            <label>Country <span style="color: red;"> *</span></label>
+                                                            <input type="text" class="form-control" required>
+                                                        </div><!-- End .col-sm-6 -->
+                                                    </div><!-- End .row -->
+                                                    <div class="row">
+                                                        <div class="col-sm-6">
+                                                         <label>Land Mark <span style="color: red;"> *</span></label>
+                                                        <input type="text" class="form-control" required>
+                                                        </div><!-- End .col-sm-6 -->
+        
+                                                        <div class="col-sm-6">
+                                                            <label> Postal/Zipcode <span style="color: red;"> *</span></label>
+                                                            <input type="text" class="form-control" required>
+                                                        </div><!-- End .col-sm-6 -->
+                                                    </div><!-- End .row -->
+        
+                                                    <button type="submit" class="btn btn-outline-primary-2">
+                                                        <span>SAVE CHANGES</span>
+                                                        <i class="icon-long-arrow-right"></i>
+                                                    </button>
+                                                </form>
+                                            </div><!-- .End .tab-pane -->
+								    	</div><!-- End .row -->
+								    </div><!-- .End .tab-pane -->
+
+								    <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
+								    	<form action="#">
+			                				<div class="row">
+			                					<div class="col-sm-6">
+			                						<label>First Name *</label>
+			                						<input type="text" class="form-control" required>
+			                					</div><!-- End .col-sm-6 -->
+
+			                					<div class="col-sm-6">
+			                						<label>Last Name *</label>
+			                						<input type="text" class="form-control" required>
+			                					</div><!-- End .col-sm-6 -->
+			                				</div><!-- End .row -->
+
+		            						<label>Display Name *</label>
+		            						<input type="text" class="form-control" required>
+		            						<small class="form-text">This will be how your name will be displayed in the account section and in reviews</small>
+
+		                					<label>Email address *</label>
+		        							<input type="email" class="form-control" required>
+
+		            						<label>Current password (leave blank to leave unchanged)</label>
+		            						<input type="password" class="form-control">
+
+		            						<label>New password (leave blank to leave unchanged)</label>
+		            						<input type="password" class="form-control">
+
+		            						<label>Confirm new password</label>
+		            						<input type="password" class="form-control mb-2">
+
+		                					<button type="submit" class="btn btn-outline-primary-2">
+			                					<span>SAVE CHANGES</span>
+			            						<i class="icon-long-arrow-right"></i>
+			                				</button>
+			                			</form>
+								    </div><!-- .End .tab-pane -->
+								</div>
+	                		</div><!-- End .col-lg-9 -->
+	                	</div><!-- End .row -->
+	                </div><!-- End .container -->
+                </div><!-- End .dashboard -->
+            </div><!-- End .page-content -->
+        </main><!-- End .main -->
+
+        
+        <%- include('../partials/userfooter') %>
