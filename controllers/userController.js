@@ -8,6 +8,7 @@ const Otp = require('../models/otpmodel');
 const bcryptjs = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const otpGenerator = require('otp-generator');
+const mongoose = require('mongoose');
 
 
 
@@ -426,12 +427,30 @@ const add_to_whishlist = async(req,res)=>{
 const load_profile = async(req,res)=>{
  try {
   const userid = req.session.user_id
-  
+  const idobject = new mongoose.Types.ObjectId(userid)
    if(userid !== undefined){
-  const user =  await User.findOne({_id: userid});
-    res.render('profile',{user: user});
+  const user =  await User.aggregate([
+    {
+      $match: {
+        _id: idobject
+      }
+    },
+   {
+    $lookup: {
+      from: "addres",
+      localField: "_id",
+      foreignField: "userid",
+      as:"address_details"
+
+    }
+   }
+
+  ])
+// res.status(200).send({success: true,msg:"success",data: user});
+  res.render('profile',{ user: user})
   }else{
     res.redirect('/login');
+    // res.status(400).send({success: false,msg:error.message});  
   }
  } catch (error) {
   console.log(error.message);
@@ -439,34 +458,102 @@ const load_profile = async(req,res)=>{
 }
 //#update address or adding multiple address and  get updated document;
 const add_address = async(req,res)=>{
- try {
-  const data = await Address.findOne({userid: req.body.userid});
-  if(data){
+//  try {
+//   const data = await Address.findOne({userid: req.body.userid});
+//   if(data){
+//     var addaddress=[];
+//      for(let i =0; i< data.address.length; i++){
+//        addaddress.push(data.address[i]);
 
-    var addaddress=[];
-     for(let i =0; i< data.address.length; i++){
-       addaddress.push(data.address[i]);
-     }
+//      }
    
-     addaddress.push(req.body.address);
-    const updated_address = await Address.findOneAndUpdate({userid : req.body.userid },{$set: {address: addaddress}},{returnDocument:"after"})
-    res.status(200).send({success:true,msg:"address added",data: updated_address});
+//      addaddress.push(req.body.address);
+//     const updated_address = await Address.findOneAndUpdate({userid : req.body.userid },{$set: {address: addaddress}},{returnDocument:"after"})
+//     res.status(200).send({success:true,msg:"address added",data: updated_address});
 
-  }else{
+//   }else{
 
-    const newaddress = new Address({     
-        userid : req.body.userid,
-        address : req.body.address
-    });
+//     const newaddress = new Address({     
+//         userid : req.body.userid,
+//         address : req.body.address
+//     });
 
-    const address_data = await newaddress.save();
-     res.status(200).send({success:true,msg:"address added",data: address_data});
+//     const address_data = await newaddress.save();
+//      res.status(200).send({success:true,msg:"address added",data: address_data});
 
-  }
- } catch (error) {
-  console.log(error.message);
+//   }
+//  } catch (error) {
+//   console.log(error.message);
+//  }
+
+try {
+ const userdata = await Address.findOne({userid: req.session.user_id})
+ if(userdata){
+   const address = new Address({
+    userid: req.session.user_id,
+    address1: req.body.address1,
+    address2: req.body.address2,
+    city: req.body.city,
+    country: req.body.country,
+    landmark: req.body.landmark,
+    zipcode: req.body.zipcode
+
+   })
+  const addaddress = await address.save();
+  // res.status(200).send({success: true,msg:"address add",data: addaddress});
+   res.status(200).redirect('/profile')
+ }else{
+  const address = new Address({
+     userid: req.session.user_id, 
+    address1: req.body.address1,
+    address2: req.body.address2,
+    city: req.body.city,
+    country: req.body.country,
+    landmark: req.body.landmark,
+    zipcode: req.body.zipcode
+   })
+   const addaddress = await address.save();
+  //  res.status(200).send({success: true,msg:"address add",data: addaddress});
+  res.status(200).redirect('/profile')
  }
+} catch (error) {
+// res.status(500).send({suucess: false, msg: error.message})
+  console.log(error.message);
 }
+}
+// #DELETE ADDRESS
+const delete_address = async(req,res)=>{
+  try {
+   
+    const address = await Address.findByIdAndDelete({_id: req.query.id});
+    res.send({success: true,message:"Address is deleted", });  
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send({success: false,message:"Have some network issue"})
+  }
+}
+// #UPDATE USER PASSWORD
+ const update_password = async(req,res)=>{
+
+  try {
+    const userid = req.session.id;
+     const password = req.body.password;
+
+    const userdata = await User.findOne({_id: userid});
+    if(userdata){
+        
+       const newpassword  = await securepassword(password);
+     const userData = await  User.findByIdAndUpdate({_id: userid},{$set:{password: newpassword}});
+      
+      res.send({success: true,message:"Your password has been updated"});
+    }else{
+      res.send({success: false,message:"User is not found"})
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+
+ }
 
 
 module.exports = {
@@ -485,5 +572,7 @@ module.exports = {
   load_cart,
   load_whishlist,
   load_profile,
-  add_address
+  add_address,
+  delete_address,
+  update_password
 }

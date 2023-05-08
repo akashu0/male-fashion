@@ -50,9 +50,13 @@ user_route.get('/addtowhishlist',userController.add_to_whishlist);
 
 // USER PROFILE
 
-user_route.get('/profile',userController.load_profile);
+user_route.get('/profile',auth.isLogin,userController.load_profile);
 //#address route
 user_route.post('/addaddress',userController.add_address);
+user_route.get('/deleteaddress',userController.delete_address);
+// #update_user_password
+user_route.post('/update-password',userController.update_password);
+
 
 
 module.exports = user_route;
