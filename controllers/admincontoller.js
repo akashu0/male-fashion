@@ -8,15 +8,7 @@ const categoryModel = require("../models/categoryModel");
 
 
 
-// for securing password
-const securePassword = async (password) => {
-  try {
-    const passwordHash = await bcrypt.hash(password, 10);
-    return passwordHash;
-  } catch (error) {
-    console.log(error.message);
-  }
-};
+
 // ---admin login page
 const login_Page = async (req, res) => {
   try {
@@ -36,21 +28,20 @@ const verify_login = async (req, res) => {
       const passwordMatch = await bcrypt.compare(password, userData.password);
       if (passwordMatch) {
         if (userData.is_admin === 0) {
-          // res.render("loginPage", { title: "Email and password is incorrect" });
-          res.send("worng user")
+          res.render("loginPage", { title: "Email and password is incorrect" });
         } else {
           req.session.admin_id = userData._id;
           res.redirect("/admin/dashboard");
         }
       } else {
-        // res.render("loginPage", {
-        //   title: "Email and password is incorrect",
-        // });
+        res.render("loginPage", {
+          title: "Email and password is incorrect",
+        });
         res.send("worng")
       }
     } else {
-      // res.render("loginPage", { title: "Email and password is incorrect" });
-      res.send("Email and password is incorrect")
+      res.render("loginPage", { title: "Email and password is incorrect" });
+      
     }
   } catch (error) {
     console.log(error.message);
@@ -78,39 +69,6 @@ const load_users = async (req, res) => {
 };
 
 
-//  ADD NEW USER
-const addUsers = async (req, res) => {
-  try {
-    const name = req.body.name;
-    const email = req.body.email;
-    const phone = req.body.phone;
-    const password = req.body.password;
-    const is_admin = 0;
-
-    console.log(name);
-
-    const spassword = await securePassword(password);
-
-    const user = new User({
-      name: name,
-      email: email,
-      phone: phone,
-      password: spassword,
-      is_admin: is_admin,
-    });
-    const userData = await user.save();
-    if (userData) {
-      // res.redirect("/admin/user");
-      res.status(200).send({success:true,data:userData})
-    } else {
-      // res.render("adduser", { message: "something worng" });
-      res.status(400).send({success:false});
-    }
-  } catch (error) {
-    console.log(error.message);
-    // res.status(500).send("something worng")
-  }
-};
 
 //---------------BLOCK AND UNBLOCK USER BY ADMIN --------------
 const block_user = async (req, res) => {
@@ -169,10 +127,10 @@ const load_productPage = async (req, res) => {
     ])
     if (productData) {
       res.render('product', { product: productData });
-      // res.status(200).send({succces: true, msg:"product details",data:productData})
+      
     } else {
       res.redirect('/admin/dashboard')
-      // res.status(400).send({succces: false,  msg: error.message })
+     
     }
 
   } catch (error) {
@@ -201,7 +159,7 @@ const add_product = async (req, res) => {
 
  
   try {
-   
+ 
 
     const arrImages = [];
     if (req.files) {
@@ -215,6 +173,7 @@ const add_product = async (req, res) => {
       productColor: req.body.productColor,
       productSize: req.body.productSize,
       price: req.body.price,
+      productQuantity: req.body.productQuantity,
       productDes: req.body.productDes,
       category_id: req.body.category_id,
       productImage: arrImages
@@ -244,28 +203,6 @@ const edit_product = async (req, res) => {
 }
 //---------UPDATE PRODUCT(EDIT-PRODUCT POST)--------- 
 const update_product = async (req, res) => {
-
-  // try {
-  //   console.log(req.body.id);
-  //   const product_data = await Product.findByIdAndUpdate({ _id: req.body.id },
-  //     {
-  //       $set: {
-  //         productName: req.body.productName,
-  //         productColor: req.body.productColor,
-  //         productSize: req.body.productSize,
-  //         productPrice: req.body.productPrice,
-  //         productDescription: req.body.productDescription
-  //       }
-  //     })
-  //   if (product_data) {
-  //     res.redirect('/admin/product');
-  //   } else {
-  //     res.send("product not updated")
-  //   }
-
-  // } catch (error) {
-  //   console.log(error.message);
-  // }
 
   try {
 
@@ -299,7 +236,7 @@ const update_product = async (req, res) => {
 
     
     const product_data = await Product.findByIdAndUpdate({_id:req.body.id},{ $set:dataobj},{ new:true});
-    // res.status(200).send({success:true, msg: "product data updated successfully", data:product_data});
+   
         res.redirect('/admin/product')
   } catch (error) {
     console.log(error.message);
@@ -377,7 +314,6 @@ const load_order = async (req, res) => {
 
 module.exports = {
   login_Page,
-  addUsers,
   verify_login,
   load_dashboard,
   load_users,

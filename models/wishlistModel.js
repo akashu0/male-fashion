@@ -7,11 +7,12 @@ const whistlistSchema = mongoose.Schema({
     required: true
     
   },
-  productId: {
-    type: String,
-    required: true
-
-  }
+  product :[{
+    product_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Product",
+        required: true
+    }}]
 
 });
 

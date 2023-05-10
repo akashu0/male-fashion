@@ -8,40 +8,28 @@
 	            			<ul class="nav nav-pills nav-fill" >
 							   
 							    <li class="nav-item">
-							        <a class="nav-link active" id="register-tab-2" data-toggle="tab" href="#register-2" role="tab" aria-controls="register-2" aria-selected="true">Sign In</a>
+							        <a class="nav-link active"  data-toggle="tab" role="tab" aria-controls="register-2" aria-selected="true">Sign In</a>
 							    </li>
 							</ul>
 							<div class="tab-content">
 							    <div class="tab-pane fade show active" id="register-2" role="tabpanel" aria-labelledby="register-tab-2">
-							    	<form action="/login" method="post" >
+							    	<form action="/otppage" method="post" >
 							    		<div class="form-group">
 							    			<label for="register-email-2"> Email address *</label>
-							    			<input type="email" class="form-control"  id="id_username" name="email" required>
+							    			<input type="email" class="form-control" id="register-email-2" name="email" required>
 							    		</div><!-- End .form-group -->
 
-							    		<div class="form-group">
-							    			<label for="register-password-2">Password *</label>
-							    			<input type="password" class="form-control" id="id_password" name="password" required>
-											<i class="far fa-eye" id="togglePassword" style="margin-left: 10px; cursor: pointer;"></i>
-							    		</div><!-- End .form-group -->
-
+							    		
 							    		<div class="form-footer">
 							    			<button type="submit" class="btn btn-outline-primary-2">
-			                					<span>SIGN IN</span>
+			                					<span>Send</span>
 			            						<i class="icon-long-arrow-right"></i>
 			                				</button>
-											<div class="form-choice">
-												<a href="/logwithotp" ><p class="text-center">or sign in with otp </p></a>
-											</div><!-- End .form-choice -->
+										
 			                				
 							    		</div><!-- End .form-footer -->
 							    	</form>
-							    	<div class="form-choice">
-								    	
-										<div class="form-choice">
-											<a href="/signup" ><p class="text-center">or SIGN UP </p></a>
-										</div><!-- End .form-choice -->
-							    	</div><!-- End .form-choice -->
+							    
 							    </div><!-- .End .tab-pane -->
 							</div><!-- End .tab-content -->
 						</div><!-- End .form-tab -->
@@ -50,12 +38,11 @@
             </div><!-- End .login-page section-bg -->
         </main><!-- End .main -->
 
-    
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+
 
     <% if (locals.title) { %>
         <script>
@@ -67,20 +54,6 @@
           });
         </script>
       <% } %>
-    
-
-	  <script>
-		const togglePassword = document.querySelector('#togglePassword');
-  const password = document.querySelector('#id_password');
-
-  togglePassword.addEventListener('click', function (e) {
-    // toggle the type attribute
-    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-    password.setAttribute('type', type);
-    // toggle the eye slash icon
-    this.classList.toggle('fa-eye-slash');
-});
-	  </script>
 
 
-<%- include('../partials/userfooter') %>
+      <%- include('../partials/userfooter') %>

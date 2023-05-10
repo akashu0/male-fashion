@@ -241,67 +241,7 @@
 </div><!-- End .mobile-menu-wrapper -->
 </div><!-- End .mobile-menu-container -->
 
-<!-- Sign in / Register Modal -->
-<div class="modal fade" id="signin-modal" tabindex="-1" role="dialog" aria-hidden="true">
- <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-        <div class="modal-body">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true"><i class="icon-close"></i></span>
-            </button>
 
-            <div class="form-box">
-                <div class="form-tab">
-                    <ul class="nav nav-pills nav-fill" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="signin-tab" data-toggle="tab" href="#signin" role="tab" aria-controls="signin" aria-selected="true">Sign In</a>
-                        </li>
-                        
-                    </ul>
-                    <div class="tab-content" id="tab-content-5">
-                        <div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
-                          <form id="myForm">
-                                <div class="form-group">
-                                    <label for="singin-email">Email address *</label>
-                                    <input type="email" class="form-control" id="emailo" name="email" required>
-                                    <p id="status"></p>
-                                </div><!-- End .form-group -->
-                                <div class="form-footer">
-                                    <button type="submit" class="btn btn-outline-primary-2" id="send">
-                                     SEND
-                                        <i class="icon-long-arrow-right"></i>
-                                    </button>
-                                </div>
-                            </form>
-                                <!-- <form id="myForm">
-                                    <div class="form-group">
-                                      <label for="email">Email address:</label>
-                                      <input type="email" class="form-control" id="email" name="email" required>
-                                    </div>
-                                  </form> -->
-                             <form>  
-                                <div class="form-group">
-                                    <label for="singin-password">Otp *</label>
-                                    <input type="text" class="form-control" id="singin-password" name="singin-password" required>
-                                </div><!-- End .form-group -->
-
-                                <div class="form-footer">
-                                    <button type="submit" class="btn btn-outline-primary-2">
-                                        <span>ENTER</span>
-                                        <i class="icon-long-arrow-right"></i>
-                                    </button>
-                                   
-                                </div><!-- End .form-footer -->
-                            </form>   
-                        </div><!-- .End .tab-pane -->
-                        
-                    </div><!-- End .tab-content -->
-                </div><!-- End .form-tab -->
-            </div><!-- End .form-box -->
-        </div><!-- End .modal-body -->
-    </div><!-- End .modal-content -->
-</div><!-- End .modal-dialog -->
-</div><!-- End .modal -->
 
 
 
@@ -318,70 +258,42 @@
 <script src="assets/js/jquery.plugin.min.js"></script>
 <script src="assets/js/jquery.magnific-popup.min.js"></script>
 <script src="assets/js/jquery.countdown.min.js"></script>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/jquery.hoverIntent.min.js"></script>
+<script src="assets/js/jquery.waypoints.min.js"></script>
+<script src="assets/js/superfish.min.js"></script>
+<script src="assets/js/owl.carousel.min.js"></script>
+<script src="assets/js/bootstrap-input-spinner.js"></script>
+<script src="assets/js/jquery.elevateZoom.min.js"></script>
+<script src="assets/js/bootstrap-input-spinner.js"></script>
+<script src="assets/js/jquery.magnific-popup.min.js"></script>
 <!-- Main JS File -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/js/bootstrap.min.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/demos/demo-5.js"></script>
+<script src="assets/js/main.js"></script>
+    <script src="assets/js/demos/demo-5.js"></script>
  <script>
 
 
 
-//   $('#send').click(function(){
-//     console.log("button clicked");
-//     let email = $("#emailo").val();
-//     if(email == " "){
-//         console.log("please enter a valid email");
-//       $("status").text("please enter a vaild email");
-//     }else{
-//         data = {email: email}
-//         $.ajax({
-//             url:'/otppage',
-//             method: "POST",
-//             data: data,
-//             success: function(data){
-//                 console.log(data.status);
-//                 $("#status").text(data.status)
-//             }
-//         })
-//     }
-//   })
 
-$('#send').click(function(){
-  console.log("button clicked");
-  let email = $("#emailo").val();
-  if(email == ""){
-    console.log("please enter a valid email");
-    $("status").text("please enter a valid email");
-  } else {
-    data = {email: email};
-    $.ajax({
-      url:'/otppage',
-      method: "POST",
-      data: data,
-      success: function(response){
-        console.log(response.status);
-        if(response.status == 400){
-        Swal.fire({
-          title: "error",
-          text: response.message,
-          icon:"error",
-          confirmButtonText: "OK"
-        });
-    }else{
 
-    }
-      }
-    });
-  }
-});
-// deleting address
+
+
+
+// deleting address from user profile
 $('#delete').click(async function(){
     console.log('button clicked');
     let id = $(this).data('delete')
@@ -429,9 +341,57 @@ $('#delete').click(async function(){
     });
 });
 
+// UPADTE PASSWORD IN USER PROFILE
 
-
-
+$('#updatepassword').click(async function(){
+    console.log('button clicked');
+    let password = $("#newpassword").val();
+    if(password == ""){
+    console.log("please enter a strong password");
+    $("status").text("please enter a strong password");
+  } else {
+    data = {password: password};
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You want to update password!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url:'/updatepassword',
+                method:'POST',
+                data: data,
+                success: function(response){
+                    if(response.status == 400 || response.status == 500){
+                        Swal.fire({
+                            title: "Error",
+                            text: response.message,
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        }); 
+                    }else{
+                        Swal.fire({
+                            title: "Success",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then((result)=>{
+                            if(result.isConfirmed){
+                                window.location.href ="/profile"; // Redirect to another page
+                            }
+                        }) 
+                    }
+                }
+            });
+        }
+    });
+}
+});
 
 
 

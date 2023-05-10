@@ -36,7 +36,8 @@ const mongoose =require("mongoose");
         default: true,
       },
       productQuantity: {
-        type: Number,
+        type: String,
+        required: true
       },
     productImage:{
         type: Array,

@@ -28,24 +28,25 @@ user_route.get("/",userController.landing_Page);
 user_route.get('/login',auth.isLogout,userController.loading_loginpage)
 user_route.post('/login',userController.verify_login)
 
-// user_route.get('/signup',userController.load_signup);
+user_route.get('/signup',userController.load_signup);
 user_route.post('/register', userController.register_user);
 
 // opt login
-// user_route.get('/logwithotp',userController.otp_page)
+user_route.get('/logwithotp',userController.otp_page)
 user_route.post('/otppage',userController.opt_singIn);
-// user_route.get('/otpverify',userController.load_otpverifypage)
+user_route.get('/otpverify',userController.load_otpverifypage)
 user_route.post('/otpverify',userController.otp_verify);
 
 // product page
 user_route.get('/productpage',auth.isLogin,userController.load_productpage)
+user_route.get('/viewproduct',userController.load_viewproduct)
 // route for CART
-user_route.get('/cart',auth.isLogin,userController.load_cart);
+user_route.get('/cart',userController.load_cart);
 user_route.get('/addtocart',auth.isLogin,userController.add_to_cart);
 
 
 // route for whishlist
-user_route.get('/whishlist',userController.load_whishlist)
+user_route.get('/whishlist',auth.isLogin,userController.load_whishlist)
 user_route.get('/addtowhishlist',userController.add_to_whishlist);
 
 // USER PROFILE
@@ -55,8 +56,10 @@ user_route.get('/profile',auth.isLogin,userController.load_profile);
 user_route.post('/addaddress',userController.add_address);
 user_route.get('/deleteaddress',userController.delete_address);
 // #update_user_password
-user_route.post('/update-password',userController.update_password);
-
+user_route.post('/updatepassword',userController.update_password);
+user_route.get('/logout',userController.log_out)
+// checkout page
+user_route.get('/checkout',userController.check_out)
 
 
 module.exports = user_route;
