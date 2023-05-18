@@ -1,0 +1,79 @@
+<%- include('../partials/adminheader') %>
+
+<main class="main">
+    <section class="content-main">
+        <div class="content-header">
+            <h2 class="content-title">Sellers cards</h2>
+            <div>
+                <a href="/admin/addcoupon" class="btn btn-primary"><i class="material-icons md-plus"></i> Add new coupon</a>
+            </div>
+        </div>
+     <% if(data && data.length > 0) {%>  
+        <div class="card mb-4">
+
+        
+            <div class="card-body">
+               
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
+                    <% data.forEach(function(coupon) { %>
+                    <div class="col">
+                        <div class="card card-user ">
+                            <div class="card-body ">
+                                <h5 class="card-title mt-50">Summer Code</h5>
+                              
+                                <div class="card-text text-muted">
+                                    <p class="m-0"> Code: <%=coupon.couponName%> </span></p>
+                                    <p class="m-0">Coupon Amount: <%=coupon.couponAmount%></p>
+                                    <p class="m-0">Expire Date: <%= new Date(coupon.couponExprieDate).toLocaleDateString() %></p>
+                                    <p class="m-0">Min Purchase: <%=coupon.minimumAmount%></p>
+                                    <p><template class="__cf_email__" data-cfemail="cea3afbcb7f7fe8eabb6afa3bea2abe0ada1a3">[email&#160;protected]</template></p>
+                                    <a href="/editcoupon?" class="btn btn-sm btn-brand rounded font-sm mt-15">Edit details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+                    
+                </div> <!-- row.// -->
+              
+            </div> <!-- card-body end// -->
+         
+        </div> <!-- card end// -->
+        <%} else { %>
+
+            <div class="card mb-4">
+            <div class="card-body">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
+                    <div class="col">
+                        <div class="card card-user">
+                            
+                            <div class="card-body">
+                                <h5 class="card-title mt-50">Coupon is Empty </h5>
+                                <div class="card-text text-muted">
+                                   
+                                    
+                            </div>
+                        </div>
+                    </div> 
+                    
+                    
+                </div> <!-- row.// -->
+            </div> <!-- card-body end// -->
+        </div>
+
+            <% } %>
+        <div class="pagination-area mt-15 mb-50">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <li class="page-item active"><a class="page-link" href="#">01</a></li>
+                    <li class="page-item"><a class="page-link" href="#">02</a></li>
+                    <li class="page-item"><a class="page-link" href="#">03</a></li>
+                    <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                    <li class="page-item"><a class="page-link" href="#">16</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+    </section> <!-- content-main end// -->
+</main>
+<%- include('../partials/adminfooter') %>

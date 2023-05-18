@@ -3,12 +3,15 @@ const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 const Whislist = require("../models/wishlistModel");
+const Coupon = require("../models/couponModel");
 const Address = require("../models/addressModel");
+const Order = require("../models/orderModel");
 const Otp = require("../models/otpmodel");
 const bcryptjs = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 const mongoose = require("mongoose");
+const Razorpay =require('razorpay');
 
 // password decrypt
 const securepassword = async (password) => {
@@ -57,7 +60,7 @@ const verify_login = async (req, res) => {
           res.redirect("/login");
         } else {
           req.session.user_id = userData._id;
-        
+
           res.redirect("/");
         }
       } else {
@@ -77,7 +80,6 @@ const verify_login = async (req, res) => {
 
 const load_signup = async (req, res) => {
   try {
-
     res.render("signup");
   } catch (error) {
     console.log(error.message);
@@ -183,7 +185,7 @@ const load_otpverifypage = async (req, res) => {
 const otp_verify = async (req, res) => {
   try {
     const useremail = req.body.email;
-    
+
     const userotp = req.body.otp;
     console.log(userotp);
     const otpHolder = await Otp.findOne({ email: useremail });
@@ -242,7 +244,6 @@ const load_productpage = async (req, res) => {
       }
       res.render("productPage", { data: send_data });
     } else {
-     
       res.redirect("/", {
         msg: " Failed to get product page",
         data: send_data,
@@ -258,7 +259,6 @@ const load_viewproduct = async (req, res) => {
   try {
     const productid = req.query.id;
     const productdata = await Product.findById({ _id: productid });
-
     res.render("viewproduct", { data: productdata });
   } catch (error) {
     console.log(error.message);
@@ -272,13 +272,14 @@ const load_viewproduct = async (req, res) => {
 const load_cart = async (req, res) => {
   try {
     const userid = req.session.user_id;
+    // const userid = req.body.user_id;
     const cartData = await Cart.findOne({ userId: userid }).populate(
       "product.product_id"
     );
     if (cartData) {
       res.render("cart", { cart: cartData });
     } else {
-      res.render("cart", { message: "Cart is empty plz shop" });
+      res.render("cart", { message: "Cart is empty plz shop", cart: cartData });
     }
   } catch (error) {
     console.log(error.message);
@@ -288,18 +289,102 @@ const load_cart = async (req, res) => {
 // #add to cart methode
 const add_to_cart = async (req, res) => {
   try {
-    const product_id = req.query.id;
     const userId = req.session.user_id;
-    const cart_data = await Cart.updateOne(
-      { userId: userId },
-      { $push: { product: { product_id } } },
-      { upsert: true }
-    );
-    res.send({ success: true, msg: "product added to cart", data: cart_data });
+    const product_id = req.query.id;
+    // const isobject = new mongoose.Types.ObjectId(product_id)
+    const finduserincart = await Cart.findOne({ userId: userId });
+    if (finduserincart) {
+      const productindex = finduserincart.product.findIndex((product) => {
+        // console.log('true or false', new String(product.product_id ).trim() == new String(product_id).trim());
+        return (
+          new String(product.product_id).trim() == new String(product_id).trim()
+        );
+      });
+      if (productindex == -1) {
+        const cart_data = await Cart.updateOne(
+          { userId: userId },
+          { $push: { product: { product_id } } },
+          { upsert: true }
+        );
+        res.send({
+          success: true,
+          msg: "product added to cart",
+          data: cart_data,
+        });
+      } else {
+        res.send({ message: "1" }); //already added the product in cart
+      }
+    } else {
+      const updatecart = new Cart({
+        userId: userId,
+        product: { product_id },
+      });
+      const data = await updatecart.save();
+      res.send({ mes: "added", data: data });
+    }
   } catch (error) {
     console.log(error.message);
   }
 };
+
+// In cart with incrementing the product number of quantity also saving the number in database with each ajax call
+const increment_product = async (req, res) => {
+  try {
+    const prodid = req.query.id;
+    const checkQuatity = await Product.findById({ _id: prodid });
+    const incr = checkQuatity.isselected + 1;
+    console.log(incr);
+    if (checkQuatity.productQuantity >= incr) {
+      console.log(checkQuatity.productQuantity);
+      const productupdate = await Product.updateOne(
+        { _id: prodid },
+        { $inc: { isselected: 1 } }
+      );
+      res.send({ message: "1" });
+    } else {
+      res.send({ message: "0" });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+const decrement_product = async (req, res) => {
+  try {
+    const prodid = req.query.id;
+    console.log(prodid);
+    const userid = req.body.userid;
+    const productupdate = await Product.updateOne(
+      { _id: prodid },
+      { $inc: { isselected: -1 } }
+    );
+    res.send({ message: "1" });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+// delete item from the cart
+const delete_cartitem = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const productid = req.query.id;
+    const cartitem = await Cart.findOne({ userId: userId });
+    const productindex = cartitem.product.findIndex((product) => {
+      return (
+        new String(product.product_id).trim() == new String(productid).trim()
+      );
+    });
+    if (productindex !== -1) {
+      cartitem.product.splice(productindex, 1);
+      await cartitem.save();
+      res.send({ message: "1" });
+    } else {
+      res.send({ message: "0" });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 // --------------#add to whishlist-------------
 
 //  LOADING WHISHLIST PAGE with DEATILS
@@ -307,14 +392,14 @@ const add_to_cart = async (req, res) => {
 const load_whishlist = async (req, res) => {
   try {
     const userid = req.session.user_id;
-    const wishlist = await Whislist.findOne({ userId: userid }).populate( "product.product_id");
+    const wishlist = await Whislist.findOne({ userId: userid }).populate(
+      "product.product_id"
+    );
     if (wishlist) {
       res.render("wishlist", { wishlist: wishlist });
     } else {
       res.render("wishlist", { wishlist: "Wishlist is empty plz shop" });
     }
-   
-   
   } catch (error) {
     console.log(error.message);
   }
@@ -365,11 +450,14 @@ const load_profile = async (req, res) => {
           },
         },
       ]);
-      // res.status(200).send({success: true,msg:"success",data: user});
-      res.render("profile", { user: user });
+
+      const order_details = await Order.find({ userId: userid })
+        .populate("product.product_id")
+        .populate("address")
+        .exec();
+      res.render("profile", { user: user, order: order_details });
     } else {
       res.redirect("/login");
-      // res.status(400).send({success: false,msg:error.message});
     }
   } catch (error) {
     console.log(error.message);
@@ -405,11 +493,12 @@ const add_address = async (req, res) => {
   //   console.log(error.message);
   //  }
 
+  const userId = req.session.user_id;
   try {
-    const userdata = await Address.findOne({ userid: req.session.user_id });
+    const userdata = await Address.findOne({ userId: userId });
     if (userdata) {
       const address = new Address({
-        userid: req.session.user_id,
+        userId: userId,
         address1: req.body.address1,
         address2: req.body.address2,
         city: req.body.city,
@@ -431,11 +520,9 @@ const add_address = async (req, res) => {
         zipcode: req.body.zipcode,
       });
       const addaddress = await address.save();
-      //  res.status(200).send({success: true,msg:"address add",data: addaddress});
       res.status(200).redirect("/profile");
     }
   } catch (error) {
-    // res.status(500).send({suucess: false, msg: error.message})
     console.log(error.message);
   }
 };
@@ -487,14 +574,127 @@ const log_out = async (req, res) => {
 const check_out = async (req, res) => {
   try {
     const userid = req.session.user_id;
-    // const toobject = new mongoose.Types.ObjectId(userid)
+    const cart = await Cart.find({ userId: userid }).populate(
+      "product.product_id"
+    );
     const address = await Address.find({ userid: userid });
-
-    res.render("checkout", { user: address });
+    // res.render("checkout", { user: address, cart: cart });
+    res.render("razorpay", { user: address, cart: cart });
   } catch (error) {
     console.log(error.message);
   }
 };
+// checking for user enter coupon is valid or not
+const checkvalid_Coupon = async (req, res) => {
+  try {
+    const couponCode = req.query.id;
+    const coupon = await Coupon.findOne({ couponName: couponCode });
+    if (coupon) {
+      res.json({ message: "1", coupon: coupon });
+    } else {
+      res.send({ message: "Coupon code invalid" });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+// -------------------ORDER-------------
+const order_Details = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    //  const userId = req.body.userid
+    console.log(userId);
+    const method = req.body.paymentmethod;
+    const couponAmount = req.body.discount;
+    const totalAmount = parseInt(req.body.purchase);
+    const itemquantity = req.body.itemquantity;
+    console.log(totalAmount);
+    const address = req.body.address;
+    const productdeatils = await Cart.findOne({ userId: userId });
+    const productIds = productdeatils.product.map(function (item) {
+      return item.product_id;
+    });
+    const order_details = new Order({
+      userId: userId,
+      total: totalAmount,
+      coupon: couponAmount,
+      address: address,
+      paymentMethod: method,
+      itemquantity: itemquantity,
+    });
+
+    // Push each product ID to the product field of the order
+    for (const productId of productIds) {
+      order_details.product.push({
+        product_id: productId,
+      });
+    }
+    const data = await order_details.save();
+    if (data) {
+      res.send({ message: "1", send: data });
+    } else {
+      res.send({ message: "0", send: data });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+// user  cancelling the one order or particular product
+const cancel_oder = async (req, res) => {
+  const productid = req.query.id;
+  console.log(productid);
+  const orderitem = await Order.findOne({
+    "product.product_id": productid,
+  }).populate("product.product_id");
+  console.log(orderitem);
+};
+// viewing orderhistory(purchased item from cart) and details
+const order_histroy = async (req, res) => {
+  try {
+    const orderid = req.query.id;
+    const order_Details = await Order.findById({ _id: orderid })
+      .populate("product.product_id")
+      .populate("address")
+      .exec();
+    if (order_Details) {
+      res.render("orderhistory", { order: order_Details });
+    } else {
+      res.redirect("/profile");
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+const razorpay_method = async(req,res)=>{
+
+try {
+
+  const amount = req.query.amount
+
+  var instance = new Razorpay({ key_id: 'rzp_test_9zuaMGnBpzoHQX', key_secret: 'wFBPfR1miTW0y7beeh8DWXLs' })
+
+ const order = await instance.orders.create({
+    amount: amount * 100,
+    currency: "INR",
+    receipt: "receipt#1",
+  })
+
+  res.status(201).json({
+    success : true,
+    order,
+    amount
+
+  })
+
+ 
+} catch (error) {
+  console.log(error.message);
+}
+
+
+}
 
 module.exports = {
   register_user,
@@ -518,4 +718,12 @@ module.exports = {
   log_out,
   check_out,
   load_viewproduct,
+  decrement_product,
+  increment_product,
+  delete_cartitem,
+  checkvalid_Coupon,
+  order_Details,
+  cancel_oder,
+  order_histroy,
+  razorpay_method 
 };

@@ -27,9 +27,11 @@ const mongoose =require("mongoose");
     category_id:{
         type: mongoose.Schema.Types.ObjectId,
          ref: 'categories',
-         required:true,
-        
-  
+         required:true, 
+    },
+    isselected:{
+        type: Number,
+        default:0
     },
     productStatus: {
         type: Boolean,

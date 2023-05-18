@@ -34,7 +34,7 @@ const storage = multer.diskStorage({
         });
     },
     filename: function (req, file, cb) {
-        const name = file.originalname;
+        const name = Date.now()+'-' +file.originalname;
         cb(null, name, function (error, success) {
             if (error) {
                 throw error
@@ -83,6 +83,14 @@ admin_route.post('/addcategory', adminController.add_category);
 
 //----------------ORDER-------------
 admin_route.get('/order',adminController.load_order)
+admin_route.get('/orderdetails',adminController.order_details)
+admin_route.post('/statusupdate',adminController.status_update)
+
+
+// -------------Coupon PAGE----------
+admin_route.get('/coupon',adminController.load_coupon)
+admin_route.get('/addcoupon',adminController.load_addcoupon);
+admin_route.post('/addcoupon',adminController.add_coupon)
 
 
 

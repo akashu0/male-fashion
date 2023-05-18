@@ -15,7 +15,7 @@
 	                	<div class="row">
 	                		<div class="col-lg-9">
 	                			<table id="myTable" class="table table-cart table-mobile">
-							<% if (cart.product.length > 0) { %>	
+							<% if (cart && cart.product.length > 0) { %>	
 									<thead>
 							
 										<tr>
@@ -48,28 +48,30 @@
 														<% } %>
 														
 													</figure>
-                                                  
+                                                 
 													<h3 class="product-title">
-														<a href="#"><%=product.product_id.productName%></a>
+													
+														<a href="#"><%= product.product_id.productName%></a>
 													</h3><!-- End .product-title -->
 												</div><!-- End .product -->
 											</td>
-											<td class="price-col price">₹<%=product.product_id.price%></td>
+											<td class="price-col price">₹<%= product.product_id.price%></td>
 											<!-- <td class="quantity-col">
                                                 <div class="cart-product-quantity">
                                               <input type="number" class="form-control qty" value="1" min="1" max="10" step="1" data-decimals="0" required>
 											 
                                                 </div>
                                             </td> -->
+											
 											<td><div class="button-container">
-												<button class="cart-qty-minus" type="button" >-</button>
-												<input type="text" name="qty" min="0" class="qty" min="0" value="0" style="width: 30px;" >
-												<button class="cart-qty-plus" type="button" >+</button>
+												<button class="cart-qty-minus" data-proid="<%=product.product_id._id%>" type="button" >-</button>
+												<input type="text" name="qty" min="0" class="qty" min="0"  value="<%=product.product_id.isselected%>" style="width: 30px;" >
+												<button class="cart-qty-plus" data-proid="<%=product.product_id._id%>"  type="button" >+</button>
 											</div>
 											</td>
 											
 											<td class="total-col amount" id="amount">₹</td>
-											<td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
+											<td class="remove-col"><button class="btn-remove delete"  value="<%=product.product_id._id%>" ><i class="icon-close"></i></button></td>
 										</tr>
 
 										<% }); %>
@@ -98,16 +100,7 @@
 								</table><!-- End .table table-wishlist -->
 
 	                			<div class="cart-bottom">
-			            			<div class="cart-discount">
-			            				<form action="#">
-			            					<div class="input-group">
-				        						<input type="text" class="form-control" required placeholder="coupon code">
-				        						<div class="input-group-append">
-													<button class="btn btn-outline-primary-2" type="submit"><i class="icon-long-arrow-right"></i></button>
-												</div><!-- .End .input-group-append -->
-			        						</div><!-- End .input-group -->
-			            				</form>
-			            			</div><!-- End .cart-discount -->
+			            			<!-- End .cart-discount -->
 
 			            			<a href="#" class="btn btn-outline-dark-2"><span>UPDATE CART</span><i class="icon-refresh"></i></a>
 		            			</div><!-- End .cart-bottom -->
@@ -120,8 +113,8 @@
 	                					<tbody>
 	                						<tr class="summary-subtotal">
 	                							<td>Subtotal:</td>
-	                							<td  >0</td>
-	                						</tr><!-- End .summary-subtotal -->
+	                							<td id="total" class="total">0</td>
+	                						</tr>
 	                						<tr class="summary-shipping">
 	                							<td>Shipping:</td>
 	                							<td>&nbsp;</td>
@@ -137,26 +130,6 @@
 	                							<td>$0.00</td>
 	                						</tr><!-- End .summary-shipping-row -->
 
-	                						<tr class="summary-shipping-row">
-	                							<td>
-	                								<div class="custom-control custom-radio">
-														<input type="radio" id="standart-shipping" name="shipping" class="custom-control-input">
-														<label class="custom-control-label" for="standart-shipping">Standart:</label>
-													</div><!-- End .custom-control -->
-	                							</td>
-	                							<td>$10.00</td>
-	                						</tr><!-- End .summary-shipping-row -->
-
-	                						<tr class="summary-shipping-row">
-	                							<td>
-	                								<div class="custom-control custom-radio">
-														<input type="radio" id="express-shipping" name="shipping" class="custom-control-input">
-														<label class="custom-control-label" for="express-shipping">Express:</label>
-													</div><!-- End .custom-control -->
-	                							</td>
-	                							<td>$20.00</td>
-	                						</tr><!-- End .summary-shipping-row -->
-
 	                						<tr class="summary-shipping-estimate">
 	                							<td>Estimate for Your Country<br> <a href="dashboard.html">Change address</a></td>
 	                							<td>&nbsp;</td>
@@ -164,7 +137,7 @@
 
 	                						<tr class="summary-total">
 	                							<td>Total:</td>
-	                							<td id="total" class="total"></td>
+	                							<td class="total"> </td>
 	                						</tr><!-- End .summary-total -->
 	                					</tbody>
 	                				</table><!-- End .table table-summary -->
@@ -177,11 +150,12 @@
 	                	</div><!-- End .row -->
 	                </div><!-- End .container -->
                 </div><!-- End .cart -->
-            </div><!-- End .page-content -->
-        </main><!-- End .main -->
+            </div>
+        </main>
 
 <script src="https://code.jquery.com/jquery-3.6.4.slim.js" integrity="sha256-dWvV84T6BhzO4vG6gWhsWVKVoa4lVmLnpBOZh/CAHU4=" crossorigin="anonymous"></script>
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
 <script>
 	
  $(document).ready(function(){
@@ -194,19 +168,62 @@
   
   // Handle increment/decrement buttons
   $('.cart-qty-plus').on('click', function(){
+	console.log("clicked");
+	var data = $(this).data('proid')
     var input = $(this).siblings('.qty');
-    var val = parseInt(input.val());
-    input.val(val + 1);
-    update_amounts();
+  	
+	//with incrementing the quatity number ajax call
+	$.ajax({
+		url:'/incrementproduct?id='+ data,
+		methode:"get",
+		success: function(response){
+		console.log(response.message);
+		 if(response.message == "0"){
+		// if response is zero it means product Quantity is unavailable
+			console.log("failed");
+			Swal.fire({
+                            title: "Error",
+                            text: "Item is Out of Stoke",
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        }); 
+		 }else{
+		   console.log("pass");	
+          var val = parseInt(input.val());
+          input.val(val + 1);
+          update_amounts();
+		 }
+		}
+	})
+
   });
 
   $('.cart-qty-minus').on('click', function(){
+	var data = $(this).data('proid')
     var input = $(this).siblings('.qty');
-    var val = parseInt(input.val());
-    if (val > 1) {
-      input.val(val - 1);
-      update_amounts();
-    }
+      var val = parseInt(input.val());
+            if (val > 1) {
+            input.val(val - 1);
+           
+    
+	$.ajax({
+		url:'/decrementproduct?id='+ data,
+		methode:"get",
+		success: function(response){
+		 if(response.message == "1"){
+			console.log("decremented");
+			update_amounts();
+		 }else{
+			Swal.fire({
+                            title: "Error",
+                            text: "Something is worng try after few min",
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        }); 
+		 }
+		}
+	})
+	}
   });
 });
 
@@ -221,6 +238,39 @@ function update_amounts(){
   });
   $('.total').text('₹' + sum.toFixed(2));
 }
+
+$('.delete').click(async function(){
+	console.log("button is click");
+	let id = $(this).val()
+	console.log(id);
+	$.ajax({
+		url:"/deletecartitem?id=" +id,
+		methode:'get',
+
+		success: function(response){
+          if(response.message == "1"){
+			Swal.fire({
+                 title: "Success",
+                text: "Item deleted",
+                icon: "success",
+                confirmButtonText: "OK"
+               }).then((result)=>{
+                            if(result.isConfirmed){
+                                window.location.href ="/cart"; // Redirect to another page
+                            }
+                        })  
+		  }else{
+			Swal.fire({
+                 title: "Error",
+                text: "Something went worng",
+                icon: "error",
+                confirmButtonText: "OK"
+               }); 
+		  }
+		}
+	})
+})
+
 
 		  
 </script>

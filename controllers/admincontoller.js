@@ -1,13 +1,9 @@
-
 const User = require("../models/userModel");
-const Product = require("../models/productModel")
-const Category = require('../models/categoryModel');
+const Product = require("../models/productModel");
+const Category = require("../models/categoryModel");
 const bcrypt = require("bcryptjs");
-const categoryModel = require("../models/categoryModel");
-
-
-
-
+const Order = require("../models/orderModel");
+const Coupon = require("../models/couponModel");
 
 // ---admin login page
 const login_Page = async (req, res) => {
@@ -37,11 +33,10 @@ const verify_login = async (req, res) => {
         res.render("loginPage", {
           title: "Email and password is incorrect",
         });
-        res.send("worng")
+        res.send("worng");
       }
     } else {
       res.render("loginPage", { title: "Email and password is incorrect" });
-      
     }
   } catch (error) {
     console.log(error.message);
@@ -68,51 +63,42 @@ const load_users = async (req, res) => {
   }
 };
 
-
-
 //---------------BLOCK AND UNBLOCK USER BY ADMIN --------------
 const block_user = async (req, res) => {
-
   try {
     const id = req.query.id;
-   
-    const user    =  await User.findByIdAndUpdate({_id: id}, { $set: { block: true }}) 
-      if (user) {
-      
-        res.send({ message: 'User blocked successfully' });
-      } 
+
+    const user = await User.findByIdAndUpdate(
+      { _id: id },
+      { $set: { block: true } }
+    );
+    if (user) {
+      res.send({ message: "User blocked successfully" });
     }
-   catch (error) {
+  } catch (error) {
     console.log(error.message);
-   
-
   }
-
 };
 const unblock_user = async (req, res) => {
   try {
     const id = req.query.id;
- 
-    const userData = await User.findByIdAndUpdate({_id: id}, { $set: { block: false } });
 
-    if(userData){
-    res.send({ message: 'User has been unblocked.' });
+    const userData = await User.findByIdAndUpdate(
+      { _id: id },
+      { $set: { block: false } }
+    );
+
+    if (userData) {
+      res.send({ message: "User has been unblocked." });
     }
-
   } catch (error) {
     console.log(error.message);
-   
-
   }
 };
 
 //-----------------PRODUCT MANAGEMENT----------------
 
-
-
-
-
-//  -------PRODUCT PAGE------
+//  -------PRODUCT PAGE---------
 const load_productPage = async (req, res) => {
   try {
     const productData = await Product.aggregate([
@@ -121,53 +107,40 @@ const load_productPage = async (req, res) => {
           from: "categories",
           localField: "category_id",
           foreignField: "_id",
-          as: "category_details"
-        }
-      }
-    ])
+          as: "category_details",
+        },
+      },
+    ]);
     if (productData) {
-      res.render('product', { product: productData });
-      
+      res.render("product", { product: productData });
     } else {
-      res.redirect('/admin/dashboard')
-     
+      res.redirect("/admin/dashboard");
     }
-
   } catch (error) {
     console.log(error.message);
-
   }
 };
 // ------- ADD PRODUCT---PAGE-----
 
-
 const load_addproduct = async (req, res) => {
   try {
-
-    const category = await Category.find({})
+    const category = await Category.find({});
     res.render("addproduct", { category: category });
   } catch (error) {
     console.log(error, message);
   }
 };
 
-
-
 // ---------ADD PRODUCTS------
 const add_product = async (req, res) => {
-
-
- 
   try {
- 
-
     const arrImages = [];
     if (req.files) {
       for (let i = 0; i < req.files.length; i++) {
         arrImages.push(req.files[i].filename);
       }
     }
-   
+
     const product = new Product({
       productName: req.body.productName,
       productColor: req.body.productColor,
@@ -176,141 +149,190 @@ const add_product = async (req, res) => {
       productQuantity: req.body.productQuantity,
       productDes: req.body.productDes,
       category_id: req.body.category_id,
-      productImage: arrImages
+      productImage: arrImages,
     });
     const product_data = await product.save();
-    res.status(200).redirect('/admin/product')
+    res.status(200).redirect("/admin/product");
     // res.status(200).send({succces: true, msg:"product details",data:product_data})
   } catch (error) {
-    res.status(400).send({succces: false,  msg: error.message })
+    res.status(400).send({ succces: false, msg: error.message });
     console.log(error.message);
-
   }
-
-}
+};
 // ---EDIT PRODUCT----
 
 const edit_product = async (req, res) => {
-
   try {
     const id = req.query.id;
     const product_data = await Product.findById({ _id: id });
-   
-     res.render('editproduct', { product: product_data }); 
+
+    res.render("editproduct", { product: product_data });
   } catch (error) {
     console.log(error.message);
   }
-}
-//---------UPDATE PRODUCT(EDIT-PRODUCT POST)--------- 
+};
+//---------UPDATE PRODUCT(EDIT-PRODUCT POST)---------
 const update_product = async (req, res) => {
-
   try {
-
     let dataobj;
-    const arrImages =[];
+    const arrImages = [];
 
-    if( req.files.length > 0){   
-       for(let i = 0; i < req.files.length; i++ ){
-          arrImages[i] =  req.files[i].filename ;
-       }
-       dataobj = {
-        productName:req.body.productName,
-        productColor:req.body.productColor,
-        productSize:req.body.productSize,
-        price:req.body.price,
-        productDes:req.body.productDes,
-        productImage:arrImages,
-       }
-
-    }else{
-//  ##for if admin not updating the image
+    if (req.files.length > 0) {
+      for (let i = 0; i < req.files.length; i++) {
+        arrImages[i] = req.files[i].filename;
+      }
       dataobj = {
-        productName:req.body.productName,
-        productColor:req.body.productColor,
-        productSize:req.body.productSize,
-        price:req.body.price,
-        productDes:req.body.productDes
-       }
-
+        productName: req.body.productName,
+        productColor: req.body.productColor,
+        productSize: req.body.productSize,
+        price: req.body.price,
+        productDes: req.body.productDes,
+        productImage: arrImages,
+      };
+    } else {
+      //  ##for if admin not updating the image
+      dataobj = {
+        productName: req.body.productName,
+        productColor: req.body.productColor,
+        productSize: req.body.productSize,
+        price: req.body.price,
+        productDes: req.body.productDes,
+      };
     }
+    const product_data = await Product.findByIdAndUpdate(
+      { _id: req.body.id },
+      { $set: dataobj },
+      { new: true }
+    );
 
-    
-    const product_data = await Product.findByIdAndUpdate({_id:req.body.id},{ $set:dataobj},{ new:true});
-   
-        res.redirect('/admin/product')
+    res.redirect("/admin/product");
   } catch (error) {
     console.log(error.message);
-    res.status(500).send({success:false, msg: error.message});
+    res.status(500).send({ success: false, msg: error.message });
   }
-
-}
+};
 
 ///--------------DELETE PRODUCT---------
 
 const delete_product = async (req, res) => {
-
   try {
     const id = req.query.id;
     await Product.deleteOne({ _id: id });
-    res.redirect('/admin/product');
+    res.redirect("/admin/product");
   } catch (error) {
     console.log(error.message);
   }
-
-}
-
-
+};
 
 // CATEGORY MANAGEMENT
 
 //----------- ADD CATEGORY------------
 
 const category_list = async (req, res) => {
-
   try {
     const categorydata = await Category.find({});
-    res.render('category', { category: categorydata })
+    res.render("category", { category: categorydata });
   } catch (error) {
     console.log(error.message);
   }
-
-}
-
+};
 
 const add_category = async (req, res) => {
   try {
-     
     const categoryName = req.body.categoryName;
     const CategoryDescription = req.body.CategoryDescription;
 
     const category = new Category({
       categoryName: categoryName,
-      CategoryDescription: CategoryDescription
+      CategoryDescription: CategoryDescription,
     });
 
     const category_data = await category.save();
-    res.status(200).send({sucess:true,msg:"category is added",data:category_data});
-
+    res
+      .status(200)
+      .send({ sucess: true, msg: "category is added", data: category_data });
   } catch (error) {
     console.log(error.message);
   }
-}
-// -------ORDER---
+};
+// -------ORDER-----
 
 const load_order = async (req, res) => {
-
   try {
-    res.render('order');
+    const order_details = await Order.find({}).populate("userId").exec();
+    res.render("order", { order: order_details });
   } catch (error) {
-
     console.log(error.message);
   }
+};
+// order details
+const order_details = async (req, res) => {
+  try {
+    const orderid = req.query.id;
+    const order_details = await Order.findById({ _id: orderid })
+      .populate("product.product_id")
+      .populate("address")
+      .populate("userId")
+      .exec();
+    res.render("orderdetails", { order: order_details });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
+const status_update = async (req, res) => {
+  try {
+    const orderid = req.body.orderid;
+    const status = req.body.status;
+    const order_update = await Order.findByIdAndUpdate(
+      { _id: orderid },
+      { $set: { status: status } }
+    );
+    if (order_update) {
+      res.send({ message: "1" });
+    } else {
+      res.send({ message: "0" });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
-}
+// -------------COUPON PAGE----------
 
+const load_coupon = async (req, res) => {
+  try {
+    const coupon_data = await Coupon.find({});
+    res.render("coupon", { data: coupon_data });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
+// loading addcoupon page for admin
+const load_addcoupon = async (req, res) => {
+  try {
+    res.render("addcoupon");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
+// adding new coupon and saving in the database
+const add_coupon = async (req, res) => {
+  try {
+    const new_coupon = new Coupon({
+      couponName: req.body.couponName,
+      couponAmount: req.body.couponAmount,
+      couponExprieDate: req.body.couponExprieDate,
+      minimumAmount: req.body.minimumAmount,
+    });
+    await new_coupon.save();
+    res.redirect("/admin/coupon");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
 module.exports = {
   login_Page,
@@ -327,5 +349,10 @@ module.exports = {
   update_product,
   delete_product,
   category_list,
-  load_order
+  load_order,
+  load_coupon,
+  add_coupon,
+  load_addcoupon,
+  order_details,
+  status_update,
 };

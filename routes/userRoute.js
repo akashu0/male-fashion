@@ -21,7 +21,7 @@ user_route.use(bodyParser.json());
 user_route.use(bodyParser.urlencoded({ extended: true }));
 
 user_route.use(flash());
-user_route.use(express.static("public"));
+user_route.use(express.static("public")); 
 
 user_route.get("/",userController.landing_Page);
 // User logIn
@@ -42,7 +42,10 @@ user_route.get('/productpage',auth.isLogin,userController.load_productpage)
 user_route.get('/viewproduct',userController.load_viewproduct)
 // route for CART
 user_route.get('/cart',userController.load_cart);
-user_route.get('/addtocart',auth.isLogin,userController.add_to_cart);
+user_route.get('/addtocart',userController.add_to_cart);
+user_route.get('/decrementproduct',userController.decrement_product);
+user_route.get('/incrementproduct',userController.increment_product);
+user_route.get('/deletecartitem',userController.delete_cartitem)
 
 
 // route for whishlist
@@ -52,6 +55,7 @@ user_route.get('/addtowhishlist',userController.add_to_whishlist);
 // USER PROFILE
 
 user_route.get('/profile',auth.isLogin,userController.load_profile);
+
 //#address route
 user_route.post('/addaddress',userController.add_address);
 user_route.get('/deleteaddress',userController.delete_address);
@@ -59,7 +63,14 @@ user_route.get('/deleteaddress',userController.delete_address);
 user_route.post('/updatepassword',userController.update_password);
 user_route.get('/logout',userController.log_out)
 // checkout page
-user_route.get('/checkout',userController.check_out)
+user_route.get('/checkout',userController.check_out);
+user_route.get('/checkvalidcoupon',userController.checkvalid_Coupon)
+// order
+user_route.post('/orderdeatils',userController.order_Details);
+user_route.get('/cancelorderitem',userController.cancel_oder);
+user_route.get('/orderhistory',userController.order_histroy);
+
+user_route.get('/onlinepayment',userController.razorpay_method);
 
 
 module.exports = user_route;

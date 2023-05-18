@@ -47,10 +47,8 @@
               <div class="row">
       
                 <% data.forEach(function(category) { %>
+
                   <% category.product.forEach(function(product) { %>
-      
-                    
-                         
                           <div class=" col-12 col-md-12 col-lg-3 d-flex product card product-2 text-center mr-5"
                               style="width: 10px; height: 400px;">
                               <figure class="product-media ">
@@ -68,7 +66,7 @@
       
                                  
                                   <div  class="product-action">
-                                      <a href="#"   class="add-product btn-product btn-cart"><span>add to cart</span></a>
+                                      <a  role="button"   data-proid="<%=product.id %>" class="addtocartbutton btn-product btn-cart"><span>add to cart</span></a>
                                   </div><!-- End .product-action -->
                               </figure><!-- End .product-media -->
       
@@ -111,18 +109,32 @@
 <script>
   $(".addtocartbutton").click(function () {
     console.log("button clicked");
-    let productid = $(this).val();
+    let productid = $(this).data('proid');
     console.log(productid);
-    //    data = {"productid":productid}
     $.ajax({
       url: "/addtocart?id=" + productid,
       type: "GET",
       success: function (response) {
-        console.log(response.data);
-      },
-      error: function (error) {
-        console.log("Error: " + error);
-      },
+       if(response.message == "1"){
+        console.log('response is back');
+        Swal.fire({
+        
+                  title: "success",
+                  text: "Item is alerady add to cart",        
+                  icon: "info",
+                  confirmButtonText: "OK"
+                 }); 
+
+       }else{
+        console.log('response is back');
+        Swal.fire({
+                  title: "success",
+                  text: "added to cart",        
+                  icon: "success",
+                  confirmButtonText: "OK"
+                 }); 
+       }
+      }
     });
   });
 
@@ -141,5 +153,7 @@
       },
     });
   });
+
+
 </script>
 <%- include('../partials/userfooter') %>

@@ -1,0 +1,103 @@
+<%- include('../partials/adminheader') %>
+<main class="main">
+    <section class="content-main">
+     <form action="/admin/addcoupon" method="post">
+        <div class="row">
+         
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Add New Coupon</h2>
+                    <div>
+                        <button  type="submit" class="btn btn-md rounded font-sm hover-up">Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label for="product_title" class="form-label">Coupon Code</label>
+                            <input type="text" placeholder="Type here" name="couponName" class="form-control" id="product_title" required>
+                        </div>
+                        <div class="row gx-3">
+                            <div class="col-md-4  mb-3">
+                                <label for="product_sku" class="form-label">Coupon Amount</label>
+                                <input type="text" placeholder="Type here" name="couponAmount" class="form-control" id="product_sku" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="product_brand" class="form-label">Minimum Purchase</label>
+                            <input type="text" placeholder="Type here" name="minimumAmount" class="form-control" id="product_brand" required>
+                        </div>
+                    </div>
+                </div> <!-- card end// -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div>
+                            <label class="form-label">Coupon Description</label>
+                            <textarea placeholder="Type here" class="form-control" rows="4"></textarea>
+                        </div>
+                    </div>
+                </div> <!-- card end// -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div>
+                            <label class="form-label">Images</label>
+                            <input class="form-control" type="file">
+                        </div>
+                    </div>
+                </div> <!-- card end// -->
+            </div>
+            <div class="col-lg-3">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <label class="form-label">Expire Date</label>
+                            <input type="date" name="couponExprieDate" placeholder="Type here" class="form-control" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Product</label>
+                            <input type="text" placeholder="Type here" class="form-control">
+                        </div>
+                        <hr>
+                        <h5 class="mb-3">Product</h5>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat">
+                            <label class="form-check-label" for="product-cat"> Shirt </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="product-cat-1">
+                            <label class="form-check-label" for="product-cat-1"> T-Shirt </label>
+                        </div>
+                    </div>
+                </div> <!-- card end// -->
+            </div>
+       
+        </div>
+     </form>
+    </section>
+   
+</main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<%- include('../partials/adminfooter') %>

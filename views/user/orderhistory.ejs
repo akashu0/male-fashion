@@ -1,0 +1,117 @@
+
+<%- include('../partials/userheader') %>
+        <main class="main">
+        	<div class="page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+        		<div class="container">
+        			<h1 class="page-title">Order<span>Histroy</span></h1>
+					<div class="cart-discount">
+						
+							
+					
+					</div>
+        		</div><!-- End .container -->
+        	</div><!-- End .page-header -->
+           
+           
+            <div class="page-content">
+            	<div class="checkout">
+	                <div class="container">
+                        <h2 class="checkout-title">Billing Details</h2>
+            	        		
+							
+		                			<div class="summary">
+		                				<h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+                                    
+		                				<table id="mytabel" class="table table-summary">
+		                					<thead>
+		                						<tr>
+		                							<th>Product</th>
+                                                    <th>Quantity</th>
+		                							<th>Total</th>
+                                                  
+		                						</tr>
+		                					</thead>
+											
+		                					<tbody >
+												
+                                              
+													<% order.product.forEach(function(product) { %>
+		                						<tr >
+													
+		                							<td><%=product.product_id.productName%></td>
+													
+													
+                                                    <td ><%=order.itemquantity%></td>
+
+                                                    <% let itemtotal = product.product_id.price * order.itemquantity%>
+		                							<td ><%=itemtotal%></td>
+													
+		                						</tr>
+												<% }); %>
+												
+											
+		                					</tbody>
+											
+											
+		                				</table><!-- End .table table-summary -->
+
+										<table class="table table-summary">
+											<tbody>
+										
+										<tr>
+											<td>Coupn Amount</td>
+											<td ><%=order.coupon%></td>
+										</tr>
+										<tr class="summary-total">
+											<td>Total:</td>
+											<td ><%=order.total%></td>
+										</tr>
+                                        <tr>
+											<td>paymentMethod</td>
+											<td ><%=order.paymentMethod%></td>
+										</tr>
+                                        <tr>
+											<td>Order Date</td>
+											<td ><%=new Date(order.orderDate).toLocaleDateString()%></td>
+										</tr>
+                                        <tr>
+                                           
+											<td>Shipping Address</td>
+											<td><%=order.address.address1%> <%=order.address.address2%>,
+                                                <%=order.address.city%>,<%=order.address.country%>,
+                                                <%=order.address.landmark%> ,<%=order.address.zipcode%>
+                                            </td>
+										</tr>
+
+									</tbody>
+									</table>
+		                				
+
+								
+
+										   
+
+										    
+
+										    
+								</div><!-- End .accordion -->
+
+		                				
+		                	</div><!-- End .summary -->
+		                		
+                               
+						 </div>
+							
+
+                                    
+                        
+
+								
+	                
+				</div>
+                </div><!-- End .checkout -->
+            </div><!-- End .page-content -->
+ </main><!-- End .main -->
+
+
+        <%- include('../partials/userfooter') %>
