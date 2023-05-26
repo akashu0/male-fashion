@@ -16,25 +16,38 @@
 							    	<form action="/register" method="post">
                                         <div class="form-group">
 							    			<label for="register-email-2">Name *</label>
-							    			<input type="text"  class="form-control" id="namevalid" name="name" required>
+							    			<input type="text"  class="form-control" id="name" name="name" >
+											<span class="text-danger" id="name-valid"></span>
 							    		</div>
 							    		<div class="form-group">
 							    			<label for="register-email-2">Your email address *</label>
-							    			<input type="email" class="form-control" id="emailvalid" name="email" required>
+							    			<input type="email" class="form-control" id="email" name="email" >
+											<span class="text-danger" id="email-valid"></span>
+
 							    		</div><!-- End .form-group -->
                                         <div class="form-group">
 							    			<label for="register-email-2">Your Phone number *</label>
 							    			<input type="text" class="form-control" id="register-" name="phone" required>
+											
 							    		</div>
 
 							    		<div class="form-group">
 							    			<label for="register-password-2">Password *</label>
-							    			<input type="password" class="form-control"id="id_password" name="password" required>
-											<i class="far fa-eye" id="togglePassword" style="margin-left: 10px; cursor: pointer;"></i>
+							    			<input type="password" class="form-control"id="password" name="password">
+											<!-- <i  class="togglePassword far fa-eye" style="margin-left: 10px; cursor: pointer;"></i> -->
+											<span class="text-danger" id="password-valid"></span>
+
+							    		</div><!-- End .form-group -->
+										<div class="form-group">
+							    			<label for="register-password-2"> Conform Password *</label>
+							    			<input type="password" class="form-control"id="confirm-password" >
+											<!-- <i class="togglePassword far fa-eye"  style="margin-left: 10px; cursor: pointer;"></i> -->
+											<span class="text-danger" id="confirm-password-valid"></span>
+
 							    		</div><!-- End .form-group -->
 
 							    		<div class="form-footer">
-							    			<button type="submit" class="btn btn-outline-primary-2">
+							    			<button id="signup-form"   class="btn btn-outline-primary-2">
 			                					<span>SIGN UP</span>
 			            						<i class="icon-long-arrow-right"></i>
 			                				</button>
@@ -72,92 +85,83 @@
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+
+		<script src="https://code.jquery.com/jquery-3.7.0.slim.js" integrity="sha256-7GO+jepT9gJe9LB4XFf8snVOjX3iYNb0FHYr5LI1N5c=" crossorigin="anonymous"></script>
 
     <% if (locals.title) { %>
         <script>
-          Swal.fire({
-            icon: 'error',
-            title: '<%=title%>',
-            showConfirmButton: false,
-            timer: 2000
-          });
+         Swal.fire({
+               title: "Error",
+                text: '<%=title%>' ,
+                icon: "error",
+                confirmButtonText: "OK"
+               })
         </script>
       <% } %>
 <script>
 
-
-		const togglePassword = document.querySelector('#togglePassword');
-  const password = document.querySelector('#id_password');
-
-  togglePassword.addEventListener('click', function (e) {
-    // toggle the type attribute
-    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-    password.setAttribute('type', type);
-    // toggle the eye slash icon
-    this.classList.toggle('fa-eye-slash');
-});
 	
+// form validition
+$(document).ready(function() {
 
+  $('#signup-form').on('click', function(e) {
+	  event.preventDefault();
 
-	// form validition
+    var name = $('#name').val();
+    var email = $('#email').val();
+    var password = $('#password').val();
+    var confirmPassword = $('#confirm-password').val();
 
-var namevalid=document.getElementById("namevalid")
-var mailvalid=document.getElementById("emailvalid")
-var Msgvalid=document.getElementById('passvalid')
+    if (name.trim() === '') {
+      $('#name-valid').text('Name is required');
+      return;
+    }else if($.isNumeric(name)){
+		$('#name-valid').text('Name should not be a number');
+		return;
+	}
 
-
-
-function namevalidation() {
-    var Name=document.getElementById('name').value;
-    if(Name.length==0){
-     namevalid.innerHTML='name is required';
-     return false;
-    }else{
-        namevalid.innerHTML='name is valid';
-        return true;
+    if (email.trim() === '') {
+      $('#email-valid').text('Email is required');
+      return;
+    } else if (!isValidEmail(email)) {
+      $('#email-valid').text('Invalid email format');
+      return;
     }
 
-   }
+    if (password.trim() === '') {
+      $('#password-valid').text('Password is required');
+      return;
+    } else if (password.length < 6) {
+      $('#password-valid').text('Password must be at least 6 characters');
+      return;
+    }
 
-function emailvalidation(){
-    var Mail=document.getElementById('Email').value;
-       if(Mail.length==0){
-          mailvalid.innerHTML='mail is required';
-          return false;
-       }
-       else if(!Mail.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
-          mailvalid.innerHTML='enter a valid email';
-          return false;
-       }
-       mailvalid.innerHTML='Done'
-       return true;
+    if (confirmPassword.trim() === '') {
+      $('#confirm-password-valid').text('Confirm Password is required');
+      return;
+    } else if (confirmPassword !== password) {
+      $('#confirm-password-valid').text('Passwords do not match');
+      return;
+    }
+
+
+     // Submit the form
+	 $('#signup-form').off('click').trigger('submit');
+
+  });
+
+  // Other validation functions and form validation logic
+});
+
+// Function to check if an email is in a valid format
+function isValidEmail(email) {
+  var emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return emailPattern.test(email);
 }
 
 
-function passvalid(){
-        var  pass=document.getElementById('pass').value;
-        if(Msg.length==0){
-           Msgvalid.innerHTML='please enter your 4 digit number'
-           return false
-        }
-        Msgvalid.innerHTML='Done'
-           return true;
-        
-}    
 
 
-function validateform(){
-    if(!namevalidation()||!emailvalidation()||! passvalid()){
-      
-    Submitvalid.innerHTML='please fix the errors before submit';
-       return false;
-    }
-    Submitvalid.innerHTML='<i class="fa-solid fa-circle-check">Click Submit</i>';
-    return true;
-
-
- }
 </script>
 
 

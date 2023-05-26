@@ -48,6 +48,7 @@ admin_route.get("/",auth.isLogout,adminController.login_Page);
 admin_route.post("/adminlogin", adminController.verify_login);
 
 admin_route.get("/dashboard",auth.isLogin,adminController.load_dashboard);
+admin_route.get("/getSalesData",auth.isLogin,adminController.get_saledata);
 
 // User Management
 admin_route.get("/user",auth.isLogin ,adminController.load_users);
@@ -75,10 +76,15 @@ admin_route.get('/delete-product',adminController.delete_product)
 
 admin_route.get('/category',adminController.category_list);
 admin_route.post('/addcategory', adminController.add_category);
+admin_route.post('/listandunlist',adminController.list_unlist)  
+
 // admin_route.get('/')
 
 
-// ---------------CART------------
+// ---------------BANNER------------
+admin_route.get('/banner',adminController.load_bannerpage)
+admin_route.post('/addbanner',upload.single('Image'),adminController.add_banner);
+admin_route.get('/deletebanner',adminController.delete_banner);
 
 
 //----------------ORDER-------------

@@ -13,17 +13,17 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <form>
+                            <form action="/admin/addcategory" method="post">
                                 <div class="mb-4">
                                     <label for="product_name" class="form-label">Name</label>
-                                    <input type="text" placeholder="Type here" class="form-control" id="product_name" />
+                                    <input type="text" placeholder="Type here" name="categoryName" class="form-control" id="product_name" />
                                 </div>
 
                                 
                             
                                 <div class="mb-4">
                                     <label class="form-label">Description</label>
-                                    <textarea placeholder="Type here" class="form-control"></textarea>
+                                    <textarea placeholder="Type here" name="CategoryDescription" class="form-control"></textarea>
                                 </div>
                                 <div class="d-grid">
                                     <button class="btn btn-primary">Create category</button>
@@ -40,6 +40,7 @@
                                           
                                             <th>Name</th>
                                             <th>Description</th>
+                                            <th>Description</th>
                                            
                                             <th class="text-end">Action</th>
                                         </tr>
@@ -50,9 +51,22 @@
                                             <tr>
                                               <td><%= count%></td>
                                               <td> <%= category.categoryName %></td>
-                                              <td> <%= category.categoryName%></td> 
+                                              <td> <%= category.CategoryDescription%></td>  
+                                              <td><% if(category.status == "0") { %>
+                                                <span class="badge rounded-pill alert-success">active</span>
+                                                <% }else{ %>
+                                                    <span class="badge rounded-pill alert-danger">Not active</span>
+                                                    
+                                                <% } %>
+                                               </td>  
                                               <td class="text-end">
-                                                <a href="/admin/deleteCategory/<%= category._id %>" class="btn btn-outline-danger rounded mt-15" style="margin-right: 10px;">Delete</a>
+                                                <% if(category.status == "0") { %>
+                                                    <a  data-cat_id="<%= category._id %>" class="btn btn-outline-danger rounded mt-15 listandunlist" style="margin-right: 10px;">Unlist</a>
+                                                    <% }else{ %>
+                                                      
+                                                        <a  data-cat_id="<%= category._id %>" class="btn btn-outline-info rounded mt-15 listandunlist" style="margin-right: 10px;">List</a>
+                                                    <% } %>
+                                               
                                                
                                             </td>
                                             </tr>
@@ -66,4 +80,71 @@
                 </div> <!-- card body .// -->
             </div> <!-- card .// -->
         </section> <!-- content-main end// -->
+
+        <script src="https://code.jquery.com/jquery-3.6.4.slim.js" integrity="sha256-dWvV84T6BhzO4vG6gWhsWVKVoa4lVmLnpBOZh/CAHU4=" crossorigin="anonymous"></script>
+        
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+
+
+    <% if (locals.title) { %>
+        <script>
+          Swal.fire({
+            icon: 'error',
+            title: '<%=title%>',
+            confirmButtonText: "OK",
+          });
+        </script>
+      <% } %>
+<script>
+$('.listandunlist').on('click',function(){
+console.log('button clicked')
+var categoryId = $(this).data('cat_id');
+var text = $(this).text().trim()
+data ={
+    "categoryId":categoryId,
+    "text":text
+}
+$.ajax({
+    url:'/admin/listandunlist',
+    method:"post",
+    data:data,
+
+    success:function(responce){
+        console.log(responce.message );
+      if(responce.message == "Item Listed"){
+        Swal.fire({
+            title: "Success",
+            text: "Category Item is listed",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              location.reload()
+            }
+          });
+      }else{
+        Swal.fire({
+            title: "Success",
+            text: "Category Item is Unlisted",
+            icon: "success",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              location.reload()
+            }
+          });
+      }
+
+    }
+})
+
+})
+
+
+
+
+
+</script>
+
         <%- include('../partials/adminfooter') %>

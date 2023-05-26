@@ -26,7 +26,7 @@ const mongoose =require("mongoose");
     },
     category_id:{
         type: mongoose.Schema.Types.ObjectId,
-         ref: 'categories',
+         ref: 'Category',
          required:true, 
     },
     isselected:{

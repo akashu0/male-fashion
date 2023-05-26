@@ -51,22 +51,31 @@
         </main><!-- End .main -->
 
     
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+		
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+		<script src="https://code.jquery.com/jquery-3.6.4.slim.js" integrity="sha256-dWvV84T6BhzO4vG6gWhsWVKVoa4lVmLnpBOZh/CAHU4=" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
 
     <% if (locals.title) { %>
         <script>
           Swal.fire({
-            icon: 'error',
-            title: '<%=title%>',
-            showConfirmButton: false,
-            timer: 2000
-          });
+               title: "Error",
+                text: '<%=title%>' ,
+                icon: "error",
+                confirmButtonText: "OK"
+               })
         </script>
-      <% } %>
+      <% } else if(locals.message) { %>
+		<script>
+			Swal.fire({
+               title: "Success",
+                text: '<%=message%>' ,
+                icon: "success",
+                confirmButtonText: "OK"
+               })
+		  </script>
+		<% } %>	
     
 
 	  <script>

@@ -35,13 +35,14 @@
                     <div class="card-body">
                         <div>
                             <label class="form-label">Coupon Description</label>
-                            <textarea placeholder="Type here" class="form-control" rows="4"></textarea>
+                            <textarea placeholder="Type here" class="form-control" name="couponDescription" rows="4"></textarea>
                         </div>
                     </div>
                 </div> <!-- card end// -->
                 <div class="card mb-4">
                     <div class="card-body">
                         <div>
+                           
                             <label class="form-label">Images</label>
                             <input class="form-control" type="file">
                         </div>
@@ -56,11 +57,18 @@
                             <input type="date" name="couponExprieDate" placeholder="Type here" class="form-control" required>
                         </div>
                         <div class="mb-4">
-                            <label class="form-label">Product</label>
-                            <input type="text" placeholder="Type here" class="form-control">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" name="category">
+                                <option value="All">All</option>
+                                <!-- <option >Select</option> -->
+                                <% category.forEach(function(category) { %>
+                                    
+                                <option value="<%=category._id%>"><%=category.categoryName%></option>
+                                <% }) %>
+                            </select>
                         </div>
                         <hr>
-                        <h5 class="mb-3">Product</h5>
+                        <!-- <h5 class="mb-3">Category</h5>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="product-cat">
                             <label class="form-check-label" for="product-cat"> Shirt </label>
@@ -68,7 +76,7 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="product-cat-1">
                             <label class="form-check-label" for="product-cat-1"> T-Shirt </label>
-                        </div>
+                        </div> -->
                     </div>
                 </div> <!-- card end// -->
             </div>

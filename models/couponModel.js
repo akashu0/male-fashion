@@ -17,6 +17,10 @@ couponExprieDate:{
     type: Date,
     required:true
 },
+couponDescription:{
+    type: String,
+    required:true
+},
 // createdAt: {
 //     type: Date,
 //     default: Date.now,
@@ -26,6 +30,10 @@ minimumAmount:{
     type: Number,
     required:true
 },
+category:{
+    type:String,
+    required:false  
+}
   
 })
 

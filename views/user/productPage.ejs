@@ -52,13 +52,19 @@
                           <div class=" col-12 col-md-12 col-lg-3 d-flex product card product-2 text-center mr-5"
                               style="width: 10px; height: 400px;">
                               <figure class="product-media ">
-                                <a href="/viewproduct?id=<%=product.id %>">
-                                  <% if (product.image && product.image.length> 0) { %>
-                                    <img src="upload/<%=product.image %>" class="product-image" alt="It" width="50px" />
-                                  <% } else { %>
-                                    <img src="upload/img.webp" alt="Default Image" class="product-image" />
-                                  <% } %>
-      
+                               
+                                  <% if (product.image && product.image.length > 0) { %>
+                                    <a href="/viewproduct?id=<%=product.id %>">
+                                    <img src="upload/<%=product.image[0] %>" alt="Product image" class="product-image">
+                                    <img src="upload/<%=product.image[1] %>" alt="Product image" class="product-image-hover">
+                                     </a>
+                                    <% } else { %>
+                                        <a href="product.html">
+                                            <img src="assets/images/demos/demo-6/products/product-1-1.jpg" alt="Product image" class="product-image">
+                                            <img src="assets/images/demos/demo-6/products/product-1-2.jpg" alt="Product image" class="product-image-hover">
+                                        </a>
+                                    <% } %>
+                                    
                                   <div class="product-action-vertical">
                                       <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to
                                               wishlist</span></a>
@@ -105,7 +111,9 @@
   
 </main>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.4.slim.js" integrity="sha256-dWvV84T6BhzO4vG6gWhsWVKVoa4lVmLnpBOZh/CAHU4=" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
 <script>
   $(".addtocartbutton").click(function () {
     console.log("button clicked");

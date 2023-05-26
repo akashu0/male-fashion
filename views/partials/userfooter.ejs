@@ -197,14 +197,7 @@
 
 <!-- Plugins JS File -->
 
-
-
-
-
-
-
 <script src="assets/js/jquery.plugin.min.js"></script>
-
 <script src="assets/js/jquery.countdown.min.js"></script>
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/bootstrap.bundle.min.js"></script>
@@ -215,133 +208,13 @@
 <script src="assets/js/jquery.elevateZoom.min.js"></script>
 <script src="assets/js/bootstrap-input-spinner.js"></script>
 <script src="assets/js/jquery.magnific-popup.min.js"></script>
+
+
+
 <!-- Main JS File -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
-
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/js/bootstrap.min.js"></script>
 <script src="assets/js/main.js"></script>
-<script src="assets/js/demos/demo-5.js"></script>
-<script>
+<script src="assets/js/demos/demo-6.js"></script>
 
-
-
-
-
-
-
-
-// deleting address from user profile
-$('#delete').click(async function(){
-    console.log('button clicked');
-    let id = $(this).data('delete')
-    console.log(id);
-    data = id;
-
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this address!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url:'/deleteaddress?id='+ data,
-                method:'get',
-                data: data,
-                success: function(response){
-                    if(response.status == 400 || response.status == 500){
-                        Swal.fire({
-                            title: "Error",
-                            text: response.message,
-                            icon: "error",
-                            confirmButtonText: "OK"
-                        }); 
-                    }else{
-                        Swal.fire({
-                            title: "Success",
-                            text: response.message,
-                            icon: "success",
-                            confirmButtonText: "OK"
-                        }).then((result)=>{
-                            if(result.isConfirmed){
-                                window.location.href ="/profile"; // Redirect to another page
-                            }
-                        }) 
-                    }
-                }
-            });
-        }
-    });
-});
-
-// UPADTE PASSWORD IN USER PROFILE
-
-$('#updatepassword').click(async function(){
-    console.log('button clicked');
-    let password = $("#newpassword").val();
-    if(password == ""){
-    console.log("please enter a strong password");
-    $("status").text("please enter a strong password");
-  } else {
-    data = {password: password};
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'You want to update password!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'Cancel',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url:'/updatepassword',
-                method:'POST',
-                data: data,
-                success: function(response){
-                    if(response.status == 400 || response.status == 500){
-                        Swal.fire({
-                            title: "Error",
-                            text: response.message,
-                            icon: "error",
-                            confirmButtonText: "OK"
-                        }); 
-                    }else{
-                        Swal.fire({
-                            title: "Success",
-                            text: response.message,
-                            icon: "success",
-                            confirmButtonText: "OK"
-                        }).then((result)=>{
-                            if(result.isConfirmed){
-                                window.location.href ="/profile"; // Redirect to another page
-                            }
-                        }) 
-                    }
-                }
-            });
-        }
-    });
-}
-});
-
-
-
-
-
- </script>
  
 </body>
 

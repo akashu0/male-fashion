@@ -86,6 +86,7 @@
                                     <th width="40%">Product</th>
                                     <th width="20%">Unit Price</th>
                                     <th width="20%">Quantity</th>
+                                    <th width="20%">Status</th>
                                     <th width="20%" class="text-end">Total</th>
                                 </tr>
                             </thead>
@@ -96,7 +97,7 @@
                                         <a class="itemside" href="#">
                                             <div class="left">
                                                 <% if (product.product_id.productImage ) { %>
-                                                    <img src="upload/<%=product.product_id.productImage %>" class="product-image" alt="It" width="50"  />
+                                                    <img src="upload/<%=product.product_id.productImage[0] %>" class="product-image" alt="It" width="50"  />
                                                   <% } else { %>
                                                     <img src="upload/img.webp" alt="Default Image" class="product-image" />
                                                   <% } %>  
@@ -107,6 +108,7 @@
                                     </td>
                                     <td><%=product.product_id.price %></td>
                                     <td><%=order.itemquantity%> </td>
+                                    <td><span class="badge rounded-pill alert-warning"><%=order.status%></span> </td>
                                     <% let total = product.product_id.price * order.itemquantity%>
                                     
                                     <td class="text-end"><%=total%></td>
@@ -127,6 +129,12 @@
                             <!-- Business name: Grand Market LLC <br> -->
                             <!-- Phone: +1 (800) 555-154-52 -->
                         </p>
+                        <h6  class="mb-15">Payment status</h6>
+                        <% if(order.status == "Return"){ %>
+                        <span class="badge rounded-pill alert-danger">Refund</span> 
+                        <% }  else { %>
+                            <span class="badge badge-pill badge-soft-success">Paid</span>
+                            <% } %>	
                     </div>
                     <div class="h-25 pt-4">
                         <div class="mb-3">

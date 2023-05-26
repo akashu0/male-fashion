@@ -40,24 +40,27 @@
 	                		</aside><!-- End .col-lg-3 -->
                              
 	                		<div class="col-md-8 col-lg-9">
-	                			<div class="tab-content">
-								    <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+	                			<div class="tab-content ">
+								    <div class="tab-pane fade show active  " id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
                                        
-                                        <div class="d-flex align-items-center ms-4 mb-4">
+                                        <div class="d-flex justify-content-center">
 											
                                           
                                             <div class="position-relative ">
-                                                <image class="rounded-circle" src="/upload/blackpolo.webp" alt="" style="width: 85px; height: 90px;">
+												<img src="assets/images/demos/demo-6/icons8.png" style="width: 60px;" alt="">
 												</div>
 												
-												<p class="m-4"> <span class="font-weight-normal text-dark">Hello,  <%=user[0].name%></span></p>                                                     
+												<p class="m-4"> <span class="font-weight-bold text-dark">Hello,  <%=user[0].name%></span></p>                                                     
                                         </div>
+									   <div class="d-flex justify-content-center">	
+										<div class="mt-5 ">
 								    	<p>Full Name : <span class="font-weight-normal text-dark"><%=user[0].name%></span>
 								    	<p>Email : <span class="font-weight-normal text-dark"><%= user[0].email%></span> 
-                                        <p>Phone number : <span class="font-weight-normal text-dark"><%= user[0].phone%></span> 
-
-                                        <br>
-                                        <a href="#tab-orders" class="tab-trigger-link link-underline">recent orders</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p>
+                                        <p>Phone number : <span class="font-weight-normal text-dark"><%= user[0].phone%></span> </p>
+									   </div>
+									</div> 
+                                        <!-- <a href="#tab-orders" class="tab-trigger-link link-underline">recent orders</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p> -->
+									
 								    </div><!-- .End .tab-pane -->
 									
 								    <div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-orders-link">
@@ -85,7 +88,7 @@
 																<figure class="product-media">
 																	<a href="/viewproduct?id=<%=product.id %>">
 																		<% if (product.product_id.productImage ) { %>
-																		  <img src="upload/<%=product.product_id.productImage %>" class="product-image" alt="It" width="50px" />
+																		  <img src="upload/<%=product.product_id.productImage[0] %>" class="product-image" alt="It" width="50px" />
 																		<% } else { %>
 																		  <img src="upload/img.webp" alt="Default Image" class="product-image" />
 																		<% } %>
@@ -100,10 +103,23 @@
 														<td class="price-col"><%=product.product_id.price %></td>
 														<td class="stock-col"><%=new Date(order.orderDate).toLocaleDateString()%></td>
 														<td class="action-col">
-															<a  class="btn  btn-outline-primary-2"><%=order.status%></a>
+															<% if(order.status == "Delivered"){ %>
+															<a data-returnorder="<%=order._id%>" class="btn  btn-outline-primary-2 return">RETURN</a>
+															<% } else if(order.status == "Return") { %>
+																<a  class="btn  btn-outline-primary-2">Order cancelled</a>
+																
+															<% }  else { %>
+																<a  class="btn  btn-outline-primary-2"><%=order.status%></a>
+																<% } %>	
+
+
 															<a href="/orderhistory?id=<%=order._id%>" class="btn  btn-outline-primary-2">View Details</a>
-														</td>
-														<td class="remove-col"><button class="btn-remove cancelorder" value="<%=product.product_id._id%>"><i class="icon-close"></i></button></td>
+														</td> 
+														<% if(order.status == "Delivered" || order.status == "Return"){ %>
+															
+														<% }  else { %>
+															<td class="remove-col"><button class="btn-remove cancelorder" value="<%=order._id%>"><i class="icon-close"></i></button></td>
+														<% } %>	
 													</tr>
 													
 												</tbody>
@@ -123,28 +139,16 @@
 								    <div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
 								    	<!-- <p>No downloads available yet.</p>
 								    	<a href="category.html" class="btn btn-outline-primary-2"><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a> -->
-										<form action="#">
-			                				<!-- <div class="row">
-			                					 <div class="col-sm-6">
-			                						<label>First Name *</label>
-			                						<input type="text" class="form-control" required>
-			                					</div>
-
-			                					<div class="col-sm-6">
-			                						<label>Last Name *</label>
-			                						<input type="text" class="form-control" required>
-			                					</div> 
-			                				</div> -->
 
 		            						<label>New password *</label>
 		            						<input type="password" class="form-control" name="password" id="newpassword" required>
 		                					<label>Re-enter password *</label>
 		        							<input type="password" class="form-control" required>
-		            							<button id="updatepassword" type="submit" class="btn btn-outline-primary-2">
+		            							<button id="updatepassword"  class="btn btn-outline-primary-2">
 			                					<span>SAVE CHANGES</span>
 			            						<i class="icon-long-arrow-right"></i>
 			                				</button>
-			                			</form>
+			                			
 								    </div><!-- .End .tab-pane -->
 
 								    <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
@@ -237,35 +241,22 @@
 
 								    <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
 								    	<form action="#">
-			                				<div class="row">
-			                					<div class="col-sm-6">
-			                						<label>First Name *</label>
-			                						<input type="text" class="form-control" required>
-			                					</div><!-- End .col-sm-6 -->
-
-			                					<div class="col-sm-6">
-			                						<label>Last Name *</label>
-			                						<input type="text" class="form-control" required>
-			                					</div><!-- End .col-sm-6 -->
-			                				</div><!-- End .row -->
-
-		            						<label>Display Name *</label>
-		            						<input type="text" class="form-control" required>
-		            						<small class="form-text">This will be how your name will be displayed in the account section and in reviews</small>
-
-		                					<label>Email address *</label>
-		        							<input type="email" class="form-control" required>
-
-		            						<label>Current password (leave blank to leave unchanged)</label>
-		            						<input type="password" class="form-control">
-
-		            						<label>New password (leave blank to leave unchanged)</label>
-		            						<input type="password" class="form-control">
-
-		            						<label>Confirm new password</label>
-		            						<input type="password" class="form-control mb-2">
-
-		                					<button type="submit" class="btn btn-outline-primary-2">
+                                           <div>
+		            						<label> Name <span style="color: red;"> *</span></label>
+		            						<input type="text" id="name" value="<%=user[0].name%>" class="form-control" required>
+											<span class="text-danger" id="name-valid"></span>
+										   </div>
+										   <div>
+		                					<label>Email address <span style="color: red;"> *</span></label>
+		        							<input type="email" id="email" value="<%=user[0].email%>" class="form-control" required>
+											<span class="text-danger" id="email-valid"></span>
+										  </div>
+										  <div>
+											<label>Phone number <span style="color: red;"> *</span></label>
+		        							<input type="text" id="phone" value="<%=user[0].phone%>" class="form-control" required>
+											<span class="text-danger" id="phone-valid"></span>
+										    </div>
+		                					<button id="signup-form" class="btn btn-outline-primary-2">
 			                					<span>SAVE CHANGES</span>
 			            						<i class="icon-long-arrow-right"></i>
 			                				</button>
@@ -284,10 +275,12 @@
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
 
 <script>
+
+
 	
 	 $('.cancelorder').click(async function(){
 	console.log("button is click");
-	let id = $(this).val()
+	let id = $('.cancelorder').val()
 	console.log(id);
 	Swal.fire({
       title: 'Are you sure?',
@@ -307,13 +300,13 @@
 		success: function(response){
           if(response.message == "1"){
 			Swal.fire({
-                 title: "Success",
-                text: "Item deleted",
+                 title: "Cancelled",
+                text: "Item is Cancelled",
                 icon: "success",
                 confirmButtonText: "OK"
                }).then((result)=>{
                             if(result.isConfirmed){
-                                window.location.href ="/cart"; // Redirect to another page
+                                location.reload()
                             }
                         })  
 		  }else{
@@ -329,7 +322,255 @@
     }
     });
 })
+// after receving the product return option for user
+$('.return').click(async function(){
+	console.log('button clicked')
+	const retun =$(this).text().trim()
+	const retunorderid =$(this).data('returnorder')
+	console.log(retun)
+	console.log(retunorderid)
+	
+	if(retun == "RETURN"){
+		Swal.fire({
+        title: 'Are you sure?',
+        text: 'You want to Return the Order!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, !',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url:'/retunorder?id='+retunorderid,
+                method:'get',
+                
+                success: function(response){
+                    if(response.message == "0"){
+                        Swal.fire({
+                            title: "Error",
+                            text: response.message,
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        }); 
+                    }else{
+                        Swal.fire({
+                            title: "Success",
+                            text: "order is return refund will be on process",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        })
+                    }
+                }
+            });
+        }
+    });
+	}
+})
 
+// form validition
+$(document).ready(function() {
+
+$('#signup-form').on('click', function(e) {
+	event.preventDefault();
+  console.log('button clicked');
+  var name = $('#name').val();
+  var email = $('#email').val();
+  var phone = $('#phone').val();
+
+  if (name.trim() === '') {
+	$('#name-valid').text('Name is required');
+	setTimeout(function() {
+      $('#name-valid').text('')
+      }, 2000);
+	return;
+  }else if($.isNumeric(name)){
+	  $('#name-valid').text('Name should not be a number');
+	  setTimeout(function() {
+      $('#name-valid').text('')
+      }, 2000);
+	  return;
+  }
+
+  if (email.trim() === '') {
+	$('#email-valid').text('Email is required');
+	setTimeout(function() {
+      $('#email-valid').text('')
+      }, 2000);
+	return;
+  } else if (!isValidEmail(email)) {
+	$('#email-valid').text('Invalid email format');
+	setTimeout(function() {
+      $('#email-valid').text('')
+      }, 2000);
+	return;
+  }
+
+  if (phone.trim() === '') {
+	$('#phone-valid').text('Phone is required');
+	setTimeout(function() {
+      $('#phone-valid').text('')
+      }, 2000);
+	return;
+  } else if (phone.length < 10) {
+	$('#phone-valid').text('Phone must be at least 10 Number');
+	setTimeout(function() {
+      $('#phone-valid').text('')
+      }, 2000);
+	return;
+  }else if (!($.isNumeric(phone))){
+	$('#phone-valid').text('Phone must be a number');
+	setTimeout(function() {
+      $('#phone-valid').text('')
+      }, 2000);
+    return;
+  }
+  data = {
+	name:name,
+	email: email,
+	phone : phone
+  }
+  $.ajax({
+	url:"/edituserdeatils",
+	method: "post",
+	data: data,
+	success:function(response){
+    if(response.message =="1"){
+		Swal.fire({
+                            title: "Success",
+                            text: "Details updated",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then((result)=>{
+                            if(result.isConfirmed){
+                                window.location.href ="/profile"; // Redirect to another page
+                            }
+                        }) 
+	}else{
+		Swal.fire({
+            	  title: "Error",
+                  text: "Something went worng",
+	            icon: "success",
+              confirmButtonText: "OK"
+                        })
+
+	}
+	}
+  })
+
+});
+
+// Other validation functions and form validation logic
+});
+
+// Function to check if an email is in a valid format
+function isValidEmail(email) {
+var emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+return emailPattern.test(email);
+}
+
+
+
+// deleting address from user profile
+$('#delete').click(async function(){
+    console.log('button clicked');
+    let id = $(this).data('delete')
+    console.log(id);
+    data = id;
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this address!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url:'/deleteaddress?id='+ data,
+                method:'get',
+                data: data,
+                success: function(response){
+                    if(response.status == 400 || response.status == 500){
+                        Swal.fire({
+                            title: "Error",
+                            text: response.message,
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        }); 
+                    }else{
+                        Swal.fire({
+                            title: "Success",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then((result)=>{
+                            if(result.isConfirmed){
+                                window.location.href ="/profile"; // Redirect to another page
+                            }
+                        }) 
+                    }
+                }
+            });
+        }
+    });
+});
+
+// UPADTE PASSWORD IN USER PROFILE
+
+$('#updatepassword').click(async function(){
+    console.log('button clicked');
+    let password = $("#newpassword").val();
+    if(password == ""){
+    console.log("please enter a strong password");
+    $("status").text("please enter a strong password");
+  } else {
+    data = {password: password};
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'You want to update password!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url:'/updatepassword',
+                method:'POST',
+                data: data,
+                success: function(response){
+                    if(response.status == 400 || response.status == 500){
+                        Swal.fire({
+                            title: "Error",
+                            text: response.message,
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        }); 
+                    }else{
+                        Swal.fire({
+                            title: "Success",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then((result)=>{
+                            if(result.isConfirmed){
+                                window.location.href ="/profile"; // Redirect to another page
+                            }
+                        }) 
+                    }
+                }
+            });
+        }
+    });
+}
+});
 </script>
 
 

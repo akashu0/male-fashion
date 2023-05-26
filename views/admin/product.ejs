@@ -65,7 +65,7 @@
                                         <% } %>
                                     </div>
                                     <div class="info">
-                                        <h6 class="mb-0"><%= product.productName %></h6>
+                                        <h6 class="mb-0"><%=product.productName %></h6>
                                     </div>
                                 </a>
                             </div>
@@ -80,7 +80,8 @@
                                
                             </div>
                             <div class="col-lg-1 col-sm-2 col-4 col-date">
-                                <span><%= product.category_details[0].categoryName%></span>
+                                <span><%= product.category_id.categoryName%></span>
+                                
                             </div>
                             <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
                                 <a href="/admin/edit-product?id=<%= product._id %>" class="btn btn-sm font-sm rounded btn-brand">

@@ -2,10 +2,11 @@ const User = require("../models/userModel");
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
-const Whislist = require("../models/wishlistModel");
+const Wishlist = require("../models/wishlistModel");
 const Coupon = require("../models/couponModel");
 const Address = require("../models/addressModel");
 const Order = require("../models/orderModel");
+const Banner = require("../models/banner");
 const Otp = require("../models/otpmodel");
 const bcryptjs = require("bcryptjs");
 const nodemailer = require("nodemailer");
@@ -27,19 +28,44 @@ const securepassword = async (password) => {
 
 const landing_Page = async (req, res) => {
   try {
-    // const user = req.session.user_id
-    res.render("home");
+    const banner = await Banner.find({})
+    const product = await Product.find({})
+    res.render("home",{banner: banner,product: product});
   } catch (error) {
     console.log(error.message);
   }
 };
+
+// catergory product page only
+
+const tshirt_page = async(req,res)=>{
+try {
+  const catergory_name = req.query.id
+  console.log(catergory_name);
+ const category_data = await Category.findOne({ categoryName: catergory_name})
+if(category_data){
+  const cat_id = category_data._id
+  const category_details = await Product.find({category_id: cat_id})
+  if (category_details) {
+    res.render('categorypage',{category: category_details});
+  }else{
+    res.redirect('/')
+  }
+}else{
+  res.redirect('/')
+}
+} catch (error) {
+  console.log(error.message);
+}
+
+} 
 
 // ------LOGIN PAGE---------
 
 const loading_loginpage = async (req, res) => {
   try {
     const title = req.flash("title");
-    res.render("login", { title: title[0] || "" });
+    res.render("login", { title: title[0] || "" ,});
   } catch (error) {
     console.log(error.message);
   }
@@ -80,7 +106,8 @@ const verify_login = async (req, res) => {
 
 const load_signup = async (req, res) => {
   try {
-    res.render("signup");
+    const title = req.flash("title");
+    res.render("signup",{ title: title[0] || "" ,});
   } catch (error) {
     console.log(error.message);
   }
@@ -215,50 +242,75 @@ const otp_verify = async (req, res) => {
 //--------------------------PRODUCT PAGE----------------
 // Loading product page with catergory and produtc deatils
 
-const load_productpage = async (req, res) => {
+// const load_productpage = async (req, res) => {
+//   try {
+//     const send_data = [];
+//     const catergoryData = await Category.find();
+//     if (catergoryData.length > 0) {
+//       for (let i = 0; i < catergoryData.length; i++) {
+//         const product_data = [];
+//         const cat_id = catergoryData[i]["_id"].toString();
+//         const cat_pro = await Product.find({ category_id: cat_id });
+//         if (cat_pro.length > 0) {
+//           for (let j = 0; j < cat_pro.length; j++) {
+//             product_data.push({
+//               id: cat_pro[j]["_id"],
+//               product_name: cat_pro[j]["productName"],
+//               product_color: cat_pro[j]["productColor"],
+//               product_size: cat_pro[j]["productSize"],
+//               product_price: cat_pro[j]["price"],
+//               productDes: cat_pro[j]["productDes"],
+//               image: cat_pro[j]["productImage"],
+//             });
+//           }
+//         }
+//         send_data.push({
+//           category: catergoryData[i]["categoryName"],
+//           product: product_data,
+//         });
+//       }
+//       res.render("productPage", { data: send_data });
+      
+//     } else {
+//       res.redirect("/", {
+//         msg: " Failed to get product page",
+//         data: send_data,
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
+
+// all product is loading in a single page with category details
+const load_productpage = async(req,res)=>{
+
   try {
-    const send_data = [];
-    const catergoryData = await Category.find();
-    if (catergoryData.length > 0) {
-      for (let i = 0; i < catergoryData.length; i++) {
-        const product_data = [];
-        const cat_id = catergoryData[i]["_id"].toString();
-        const cat_pro = await Product.find({ category_id: cat_id });
-        if (cat_pro.length > 0) {
-          for (let j = 0; j < cat_pro.length; j++) {
-            product_data.push({
-              id: cat_pro[j]["_id"],
-              product_name: cat_pro[j]["productName"],
-              product_color: cat_pro[j]["productColor"],
-              product_size: cat_pro[j]["productSize"],
-              product_price: cat_pro[j]["price"],
-              productDes: cat_pro[j]["productDes"],
-              image: cat_pro[j]["productImage"],
-            });
-          }
-        }
-        send_data.push({
-          category: catergoryData[i]["categoryName"],
-          product: product_data,
-        });
-      }
-      res.render("productPage", { data: send_data });
-    } else {
-      res.redirect("/", {
-        msg: " Failed to get product page",
-        data: send_data,
-      });
+    var page = 1;
+    if(req.query.page){
+     page = req.query.page
+    }
+    const limit = 4;
+
+    const product_data = await Product.find({}).populate('category_id').limit(limit * 1).skip((page - 1) * limit).exec();
+    const count = await Product.find({}).populate('category_id').countDocuments();
+
+    if(product_data){
+     res.render('product',{product: product_data, totalpage : Math.ceil(count/limit), currentpage: page});
+    }else{
+    res.redirect('/');
     }
   } catch (error) {
     console.log(error.message);
   }
-};
+  
+}
 
 // VIEWPRODUCT PAGE
 const load_viewproduct = async (req, res) => {
   try {
     const productid = req.query.id;
-    const productdata = await Product.findById({ _id: productid });
+    const productdata = await Product.findById({ _id: productid }).populate('category_id');
     res.render("viewproduct", { data: productdata });
   } catch (error) {
     console.log(error.message);
@@ -279,7 +331,7 @@ const load_cart = async (req, res) => {
     if (cartData) {
       res.render("cart", { cart: cartData });
     } else {
-      res.render("cart", { message: "Cart is empty plz shop", cart: cartData });
+      res.render("cart", { message: "Cart is empty plz shop"});
     }
   } catch (error) {
     console.log(error.message);
@@ -291,7 +343,6 @@ const add_to_cart = async (req, res) => {
   try {
     const userId = req.session.user_id;
     const product_id = req.query.id;
-    // const isobject = new mongoose.Types.ObjectId(product_id)
     const finduserincart = await Cart.findOne({ userId: userId });
     if (finduserincart) {
       const productindex = finduserincart.product.findIndex((product) => {
@@ -333,9 +384,7 @@ const increment_product = async (req, res) => {
     const prodid = req.query.id;
     const checkQuatity = await Product.findById({ _id: prodid });
     const incr = checkQuatity.isselected + 1;
-    console.log(incr);
     if (checkQuatity.productQuantity >= incr) {
-      console.log(checkQuatity.productQuantity);
       const productupdate = await Product.updateOne(
         { _id: prodid },
         { $inc: { isselected: 1 } }
@@ -392,7 +441,7 @@ const delete_cartitem = async (req, res) => {
 const load_whishlist = async (req, res) => {
   try {
     const userid = req.session.user_id;
-    const wishlist = await Whislist.findOne({ userId: userid }).populate(
+    const wishlist = await Wishlist.findOne({ userId: userid }).populate(
       "product.product_id"
     );
     if (wishlist) {
@@ -411,18 +460,58 @@ const add_to_whishlist = async (req, res) => {
   try {
     const userId = req.session.user_id;
     const product_id = req.query.id;
+    const finduserinwishliist = await Wishlist.findOne({ userId: userId });
+    if (finduserinwishliist) {
+      const productindex = finduserinwishliist.product.findIndex((product) => {
+        // console.log('true or false', new String(product.product_id ).trim() == new String(product_id).trim());
+        return (
+          new String(product.product_id).trim() == new String(product_id).trim()
+        );
+      });
+      if (productindex == -1) {
+        const wish_data = await Wishlist.updateOne(
+          { userId: userId },
+          { $push: { product: { product_id } } },
+          { upsert: true }
+        );
+        res.send({
+          success: true,
+          msg: "product added to cart",
+          data: wish_data,
+        });
+      } else {
+        res.send({ message: "1" }); //already added the product in wishlist
+      }
+    } else {
+      const updatewishlist = new Wishlist({
+        userId: userId,
+        product: { product_id },
+      });
+      const data = await updatewishlist.save();
+      res.send({ mes: "added", data: data });
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
 
-    console.log(product_id);
-    const wish_data = await Whislist.updateOne(
-      { userId: userId },
-      { $push: { product: { product_id } } },
-      { upsert: true }
-    );
-    res.send({
-      success: true,
-      msg: "product added to whishlist",
-      data: wish_data,
+const delete_wishlist = async (req, res) => {
+  try {
+    const userId = req.session.user_id;
+    const productid = req.query.id;
+    const wishitem = await Wishlist.findOne({ userId: userId });
+    const productindex = wishitem.product.findIndex((product) => {
+      return (
+        new String(product.product_id).trim() == new String(productid).trim()
+      );
     });
+    if (productindex !== -1) {
+      wishitem.product.splice(productindex, 1);
+      await wishitem.save();
+      res.send({ message: "1" });
+    } else {
+      res.send({ message: "0" });
+    }
   } catch (error) {
     console.log(error.message);
   }
@@ -463,36 +552,25 @@ const load_profile = async (req, res) => {
     console.log(error.message);
   }
 };
+
+const edituser_Details = async(req,res)=>{
+try {
+  const userId = req.session.user_id;
+  const update_user = await User.findByIdAndUpdate({_id: userId},{ $set:{name: req.body.name,email: req.body.email, phone: req.body.phone}})
+  if(update_user){
+    res.send({message:'1'})
+  }else{
+    res.send({message:'0'})
+  }
+} catch (error) {
+  console.log(error.message);
+}
+}
+
+
+
 //#update address or adding multiple address and  get updated document;
 const add_address = async (req, res) => {
-  //  try {
-  //   const data = await Address.findOne({userid: req.body.userid});
-  //   if(data){
-  //     var addaddress=[];
-  //      for(let i =0; i< data.address.length; i++){
-  //        addaddress.push(data.address[i]);
-
-  //      }
-
-  //      addaddress.push(req.body.address);
-  //     const updated_address = await Address.findOneAndUpdate({userid : req.body.userid },{$set: {address: addaddress}},{returnDocument:"after"})
-  //     res.status(200).send({success:true,msg:"address added",data: updated_address});
-
-  //   }else{
-
-  //     const newaddress = new Address({
-  //         userid : req.body.userid,
-  //         address : req.body.address
-  //     });
-
-  //     const address_data = await newaddress.save();
-  //      res.status(200).send({success:true,msg:"address added",data: address_data});
-
-  //   }
-  //  } catch (error) {
-  //   console.log(error.message);
-  //  }
-
   const userId = req.session.user_id;
   try {
     const userdata = await Address.findOne({ userId: userId });
@@ -543,7 +621,6 @@ const update_password = async (req, res) => {
   try {
     const userid = req.session.user_id;
     const password = req.body.password;
-    console.log(password);
     const userdata = await User.findOne({ _id: userid });
     if (userdata) {
       const newpassword = await securepassword(password);
@@ -571,15 +648,16 @@ const log_out = async (req, res) => {
   }
 };
 // ------------checkout ------------
-const check_out = async (req, res) => {
+const   check_out = async (req, res) => {
   try {
     const userid = req.session.user_id;
     const cart = await Cart.find({ userId: userid }).populate(
       "product.product_id"
     );
     const address = await Address.find({ userid: userid });
+    const coupon = await Coupon.find({});
     // res.render("checkout", { user: address, cart: cart });
-    res.render("razorpay", { user: address, cart: cart });
+    res.render("checkout", { user: address, cart: cart ,coupon: coupon});
   } catch (error) {
     console.log(error.message);
   }
@@ -592,6 +670,7 @@ const checkvalid_Coupon = async (req, res) => {
     if (coupon) {
       res.json({ message: "1", coupon: coupon });
     } else {
+
       res.send({ message: "Coupon code invalid" });
     }
   } catch (error) {
@@ -603,13 +682,12 @@ const order_Details = async (req, res) => {
   try {
     const userId = req.session.user_id;
     //  const userId = req.body.userid
-    console.log(userId);
     const method = req.body.paymentmethod;
     const couponAmount = req.body.discount;
     const totalAmount = parseInt(req.body.purchase);
     const itemquantity = req.body.itemquantity;
-    console.log(totalAmount);
     const address = req.body.address;
+    const categoryId = req.body.categoryId;
     const productdeatils = await Cart.findOne({ userId: userId });
     const productIds = productdeatils.product.map(function (item) {
       return item.product_id;
@@ -621,6 +699,7 @@ const order_Details = async (req, res) => {
       address: address,
       paymentMethod: method,
       itemquantity: itemquantity,
+      category_id: categoryId,
     });
 
     // Push each product ID to the product field of the order
@@ -641,12 +720,17 @@ const order_Details = async (req, res) => {
 };
 // user  cancelling the one order or particular product
 const cancel_oder = async (req, res) => {
-  const productid = req.query.id;
-  console.log(productid);
-  const orderitem = await Order.findOne({
-    "product.product_id": productid,
-  }).populate("product.product_id");
-  console.log(orderitem);
+  const orderid = req.query.id;
+  if(orderid){
+    const orderitem = await Order.findByIdAndUpdate(
+      { _id: orderid },
+      { $set: { status: "Cancelled" } }
+    );
+    res.send({message: "1"}) // if orderstatus is updated sending ajax responce to fronted 
+  }else{
+    res.send({message: "0"}) // if orderstatus is updated send message 0 as string.message will shown to user by sweet_alert
+  }
+  
 };
 // viewing orderhistory(purchased item from cart) and details
 const order_histroy = async (req, res) => {
@@ -666,35 +750,59 @@ const order_histroy = async (req, res) => {
   }
 };
 
-
+// for online payement through razorpayment and loading the page
 const razorpay_method = async(req,res)=>{
-
 try {
-
-  const amount = req.query.amount
-
+  const orderid = req.query.id
+  const order_data = await Order.findById({_id: orderid}).populate('address').populate('product.product_id')
+if(order_data){
+  const amount = order_data.total
   var instance = new Razorpay({ key_id: 'rzp_test_9zuaMGnBpzoHQX', key_secret: 'wFBPfR1miTW0y7beeh8DWXLs' })
-
  const order = await instance.orders.create({
     amount: amount * 100,
     currency: "INR",
     receipt: "receipt#1",
   })
-
-  res.status(201).json({
-    success : true,
-    order,
-    amount
-
-  })
-
- 
+  res.render('razorpy',{order: order_data,payorder: order,amount: amount});
+}else{
+res.redirect('/checkout')
+}
 } catch (error) {
   console.log(error.message);
 }
-
-
 }
+// after online payment succes page
+const ordersuccess_page = async(req,res)=>{
+try {
+  res.render('paymentsuccess')
+} catch (error) {
+  console.log(error.message);
+}
+}
+// After receving the peoduct user want to return the product 
+const return_order = async(req,res)=>{
+try {
+  
+const orderid = req.query.id
+console.log(orderid);
+const order_update = await Order.findByIdAndUpdate(
+  { _id: orderid },
+  { $set: { status: "Return" } }
+);
+if (order_update) {
+  res.send({ message: "1" });
+} else {
+  res.send({ message: "0" });
+}
+
+} catch (error) {
+  console.log(error.message);
+}
+}
+
+
+
+
 
 module.exports = {
   register_user,
@@ -725,5 +833,11 @@ module.exports = {
   order_Details,
   cancel_oder,
   order_histroy,
-  razorpay_method 
+  razorpay_method,
+  tshirt_page ,
+  delete_wishlist,
+  ordersuccess_page,
+  return_order,
+  edituser_Details
+  
 };

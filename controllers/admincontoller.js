@@ -4,6 +4,7 @@ const Category = require("../models/categoryModel");
 const bcrypt = require("bcryptjs");
 const Order = require("../models/orderModel");
 const Coupon = require("../models/couponModel");
+const Banner = require('../models/banner');
 
 // ---admin login page
 const login_Page = async (req, res) => {
@@ -42,15 +43,54 @@ const verify_login = async (req, res) => {
     console.log(error.message);
   }
 };
-//  LOG IN
 
+// loading dashboad with deatils of each sections like user count, product count,order details
 const load_dashboard = async (req, res) => {
   try {
-    res.render("adminhome");
+    const revenue = await Order.aggregate([{ '$match': {"status": "Delivered"}},{'$group': {'_id': "null", "total": {"$sum": "$total"}}}])
+    const ordercount = await Order.find({}).count()
+    const orders = await Order.find({}).populate('userId')
+    const product = await Product.find({}).count()
+    const user = await User.find({}).count()
+    res.render("adminhome",{orders: orders,ordercount: ordercount,user: user, product: product,revenue: revenue });
   } catch (error) {
     console.log(error.message);
   }
 };
+
+const get_saledata = async (req, res) => {
+  try {
+    const salesData = await Order.aggregate([{ $match: { status: 'Delivered' } },{ $group: {_id: { $dateToString: { format: '%Y-%m-%d', date: '$orderDate' } },totalRevenue: { $sum: '$total' }}},{ $sort: { _id: 1 } }]);
+    const categorySales = await Order.aggregate([
+      {
+        $lookup: {
+          from: "categories", // The name of the Category collection
+          localField: "category_id",
+          foreignField: "_id",
+          as: "categoryInfo"
+        }
+      },
+      {
+        $unwind: "$categoryInfo"
+      },
+      {
+        $group: {
+          _id: "$categoryInfo.categoryName",
+          totalSales: { $sum: "$total" }
+        }
+      }
+    ]);
+  //  console.log(categorySales);    
+  //  console.log(salesData);    
+   res.json({ salesData: salesData, categorySales: categorySales });  
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+};
+
+
+
 // --------USERS MANAGEMENT-----
 
 // ----USER PAGE AND LISTING THE USER--------
@@ -101,16 +141,7 @@ const unblock_user = async (req, res) => {
 //  -------PRODUCT PAGE---------
 const load_productPage = async (req, res) => {
   try {
-    const productData = await Product.aggregate([
-      {
-        $lookup: {
-          from: "categories",
-          localField: "category_id",
-          foreignField: "_id",
-          as: "category_details",
-        },
-      },
-    ]);
+    const productData = await Product.find({}).populate('category_id').exec();
     if (productData) {
       res.render("product", { product: productData });
     } else {
@@ -231,7 +262,8 @@ const delete_product = async (req, res) => {
 const category_list = async (req, res) => {
   try {
     const categorydata = await Category.find({});
-    res.render("category", { category: categorydata });
+    const title = req.flash("title");
+    res.render("category", { category: categorydata ,title: title[0] || "" });
   } catch (error) {
     console.log(error.message);
   }
@@ -241,20 +273,67 @@ const add_category = async (req, res) => {
   try {
     const categoryName = req.body.categoryName;
     const CategoryDescription = req.body.CategoryDescription;
-
+   const category_details = await Category.findOne({categoryName: categoryName})
+   if(category_details){
+    req.flash("title", "Category already is Available");
+    res.redirect('/admin/category')
+   }else{
     const category = new Category({
       categoryName: categoryName,
       CategoryDescription: CategoryDescription,
     });
 
     const category_data = await category.save();
-    res
-      .status(200)
-      .send({ sucess: true, msg: "category is added", data: category_data });
+   res.redirect('/admin/category')
+  } 
+    // res.send({ sucess: true, msg: "category is added", data: category_data });
   } catch (error) {
     console.log(error.message);
   }
 };
+// admin can list and unlist the category this is done by a ajax call with values of categoryid and list or unlist 
+const list_unlist = async(req,res)=>{
+  try {
+    const categoryid = req.body.categoryId
+    const tochange = req.body.text
+   const cat_data = await Category.findById({_id: categoryid})
+  if (cat_data) {
+    if(tochange =="List"){
+      Category.updateOne(
+        { _id: categoryid },
+        { $set: { status: "0" } }
+      )
+        .then(() => {
+          res.send({ message: "Item Listed" });
+        })
+        .catch((error) => {
+         
+          req.flash("title", "Failed to update category");
+            res.redirect('/admin/category')
+        });
+    }else{
+      Category.updateOne(
+        { _id: categoryid }, 
+        { $set: { status: "1" } }
+      )
+        .then(() => {
+          res.send({ message: "Item Unlisted" });
+        })
+        .catch((error) => {
+          req.flash("title", "Failed to update category");
+            res.redirect('/admin/category')
+        });
+    }
+  }else{
+    req.flash("title", "Something went worng");
+    res.redirect('/admin/category')
+  }
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+
 // -------ORDER-----
 
 const load_order = async (req, res) => {
@@ -299,7 +378,7 @@ const status_update = async (req, res) => {
 };
 
 // -------------COUPON PAGE----------
-
+// coupon page for admin where can listsed coupons and offers 
 const load_coupon = async (req, res) => {
   try {
     const coupon_data = await Coupon.find({});
@@ -309,23 +388,29 @@ const load_coupon = async (req, res) => {
   }
 };
 
-// loading addcoupon page for admin
+// loading addcoupon page for admin where can add new coupon and offers
 const load_addcoupon = async (req, res) => {
   try {
-    res.render("addcoupon");
+    const category = await Category.find({})
+    res.render("addcoupon",{category: category});
   } catch (error) {
     console.log(error.message);
   }
 };
 
-// adding new coupon and saving in the database
+// adding new coupon and offers and saving in the database
 const add_coupon = async (req, res) => {
   try {
+    console.log(req.body.category);
+  console.log( req.body.category);
     const new_coupon = new Coupon({
       couponName: req.body.couponName,
       couponAmount: req.body.couponAmount,
       couponExprieDate: req.body.couponExprieDate,
       minimumAmount: req.body.minimumAmount,
+      category: req.body.category,
+      couponDescription:req.body.couponDescription
+    
     });
     await new_coupon.save();
     res.redirect("/admin/coupon");
@@ -333,6 +418,52 @@ const add_coupon = async (req, res) => {
     console.log(error.message);
   }
 };
+// ------------------BANNER------------------
+// loading banner page when banner is clicked
+const load_bannerpage =async(req,res)=>{
+try { 
+  const Banner_data = await Banner.find({})
+
+  res.render('banner',{banner: Banner_data});
+} catch (error) {
+  console.log(error.message);
+}
+}
+// adding banner deatils and images as array in database
+const add_banner =async(req,res)=>{
+try {
+  const {Description} = req.body
+   const Image = req.file
+   const name = req.body.name
+  const newBanner = new Banner({
+    name: name,
+    Image : Image.filename,
+    Description: Description,
+  })
+ const banner = await newBanner.save()
+ if(banner){
+ res.send({message:"banner added"})
+ }else{
+  res.send({message:"something went worng"})
+ }
+} catch (error) {
+  console.log(error.message);
+}
+}
+// this method is for deleting  selected banner by admin
+const delete_banner = async(req,res)=>{
+try {
+  const id = req.query.id;
+  if(id){
+    const banner_data = await Banner.findByIdAndDelete({_id: id})
+    res.send({message: "1"})
+  } else{
+    res.send({message: "0"})
+  }
+} catch (error) {
+  console.log(error.message);
+}
+}
 
 module.exports = {
   login_Page,
@@ -355,4 +486,9 @@ module.exports = {
   load_addcoupon,
   order_details,
   status_update,
+  list_unlist,
+  load_bannerpage,
+  add_banner,
+  delete_banner,
+  get_saledata
 };

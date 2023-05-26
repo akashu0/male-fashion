@@ -31,26 +31,27 @@
 										<figure class="product-media">
 											<% if (product && product.product_id && product.product_id.productImage) { %>
 												<a href="#">
-													<img src="upload/<%= product.product_id.productImage %>" alt="Product image">
+													<img src="upload/<%= product.product_id.productImage[0] %>" alt="Product image">
 												</a>
 											<% } else { %>
 												<a href="" >
-													<img src="" alt="no imag">
+													<img src="assets/images/demos/demo-6/products/product-1-1.jpg" alt="Product image" class="product-image">
 												</a>
 											<% } %>
 										</figure>
 
 										<h3 class="product-title">
-											<a href="#"><%=product.product_id.productName%></a>
+											<a href="/viewproduct?id=<%=product.product_id._id %>"><%=product.product_id.productName%></a>
 										</h3><!-- End .product-title -->
 									</div><!-- End .product -->
 								</td>
 								<td class="price-col">₹<%=product.product_id.price%></td>
 								<td class="stock-col"><span class="in-stock">In stock</span></td>
 								<td class="action-col">
-									<a    value="<%=product.id %>"  class="btn btn-block btn-outline-primary-2"><i class="icon-cart-plus"></i>Add to Cart</a>
+									<a  data-proid="<%=product.product_id.id %>"    class="addtocartbutton btn btn-block btn-outline-primary-2"><i class="icon-cart-plus"></i>Add to Cart</a>
 								</td>
-								<td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td>
+								<!-- <td class="remove-col"><button class="btn-remove"><i class="icon-close"></i></button></td> -->
+								<td class="remove-col"><button class="btn-remove delete"  value="<%=product.product_id.id%>" ><i class="icon-close"></i></button></td>
 							</tr>
 							<% }); %>
 						</tbody>
@@ -77,5 +78,75 @@
             	</div><!-- End .container -->
             </div><!-- End .page-content -->
         </main><!-- End .main -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.4.slim.js" integrity="sha256-dWvV84T6BhzO4vG6gWhsWVKVoa4lVmLnpBOZh/CAHU4=" crossorigin="anonymous"></script>
+				<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+				<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+		<script>
+		  $(".addtocartbutton").click(function () {
+			console.log("button clicked");
+			let productid = $(this).data('proid');
+			console.log(productid);
+			$.ajax({
+			  url: "/addtocart?id=" + productid,
+			  type: "GET",
+			  success: function (response) {
+			   if(response.message == "1"){
+				console.log('response is back');
+				Swal.fire({
+				
+						  title: "success",
+						  text: "Item is alerady add to cart",        
+						  icon: "info",
+						  confirmButtonText: "OK"
+						 }); 
+		
+			   }else{
+				console.log('response is back');
+				Swal.fire({
+						  title: "success",
+						  text: "added to cart",        
+						  icon: "success",
+						  confirmButtonText: "OK"
+						 }); 
+			   }
+			  }
+			});
+		  });
 
+		//   for deleting wishlist items
+		$('.delete').click(async function(){
+	console.log("button is click");
+	let id = $(this).val()
+	console.log(id);
+	$.ajax({
+		url:"/deletewhishlistitem?id=" +id,
+		methode:'get',
+
+		success: function(response){
+          if(response.message == "1"){
+			Swal.fire({
+                 title: "Success",
+                text: "Item deleted",
+                icon: "success",
+                confirmButtonText: "OK"
+               }).then((result)=>{
+                            if(result.isConfirmed){
+                                location.reload()
+                            }
+                        })  
+		  }else{
+			Swal.fire({
+                 title: "Error",
+                text: "Something went worng",
+                icon: "error",
+                confirmButtonText: "OK"
+               }); 
+		  }
+		}
+	})
+})
+
+
+		 </script> 
         <%- include('../partials/userfooter') %>

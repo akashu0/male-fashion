@@ -39,7 +39,7 @@
 														</a> -->
 														<% if (product && product.product_id && product.product_id.productImage) { %>
 															<a href="#">
-																<img src="upload/<%= product.product_id.productImage %>" alt="Product image">
+																<img src="upload/<%= product.product_id.productImage[0] %>" alt="Product image">
 															</a>
 														<% } else { %>
 															<a href="" >

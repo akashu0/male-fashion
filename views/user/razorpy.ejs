@@ -1,0 +1,209 @@
+<%- include('../partials/userheader') %>
+
+<main class="main">
+  <div
+    class="page-header text-center"
+    style="background-image: url('assets/images/page-header-bg.jpg')"
+  >
+    <div class="container">
+      <h3 class="page-title">card payment</h3>
+    </div>
+    <!-- End .container -->
+  </div>
+  <!-- End .page-header -->
+  <div class="page-content">
+    <div class="cart">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-9">
+            <table id="myTable" class="table table-cart table-mobile">
+				<% if (order) { %>
+              <h3 class="card-title mt-2">Shipping Address</h3>
+              <!-- End .card-title -->
+			 
+              <tbody>
+                <tr>
+                  <td class="product-col">
+                    <p class="ml-5">
+						<%= order.address.address1 %> , <%=order.address.address2%>
+						<%= order.address.city%><br />
+						<%=order.address.country%> , <%=order.address.landmark%> <br />
+						<%=order.address.zipcode%>
+                    </p>
+                  </td>
+                </tr>
+
+				
+              </tbody>
+            </table>
+            <!-- End .table table-wishlist -->
+          </div>
+         
+        
+          <aside class="col-lg-3">
+            <div class="summary summary-cart">
+              <h3 class="summary-title">Order summary</h3>
+			  
+
+              <table id="mytabel" class="table table-summary">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+					<% order.product.forEach(function(product) { %> 
+						
+                  <tr>
+                    <td><%=product.product_id.productName%></td>
+                    <td class="Rs"><%=product.product_id.price%></td>
+                  </tr> 
+
+				  <% }); %>
+				 
+                </tbody>
+              </table>
+              <table class="table table-summary">
+                <tbody>
+                  <tr>
+                    <td>Coupon or Offer</td>
+                    <td><p id="dis"><%=order.coupon%></p></td>
+                  </tr>
+                  <tr class="summary-total">
+                    <td>Total:</td>
+                    <td id="finaltotal"><%=order.total%></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="accordion-summary" id="accordion-payment">
+                <div class="card">
+                  <div class="card-header" id="heading-4">
+                    <h2 class="card-title">
+                      <a
+                        class="collapsed method"
+                        data-method="Razorpay"
+                        value="Razorpay">
+                      Payment Method
+                        <h6 class="float-right paypal-link"
+                          > Razorpay</h6 >
+                      </a>
+                    </h2>
+                    <div
+                      id="collapse-4"
+                      class="collapse"
+                      aria-labelledby="heading-4"
+                      data-parent="#accordion-payment"
+                    >
+                      <div class="card-body"></div>
+                      <!-- End .card-body -->
+                    </div>
+                    <!-- End .collapse -->
+                  </div>
+                  <!-- End .card-header -->
+                </div>
+                <!-- End .card -->
+
+               
+                </div>
+                <!-- End .card -->
+              </div>
+              <!-- End .accordion -->
+
+              <button
+                type="submit"
+                id="rzp-button1"
+                class="btn btn-outline-primary-2 btn-order btn-block"
+              >
+                <span>Pay </span>
+              </button>
+            </div>
+            <!-- End .summary -->
+           
+			 <% } else { %>
+            <div
+              class="tab-pane fade"
+              id="tab-orders"
+              role="tabpanel"
+              aria-labelledby="tab-orders-link">
+              <p>No order has been made yet.</p>
+              <a href="category.html" class="btn btn-outline-primary-2"
+                ><span>GO SHOP</span><i class="icon-long-arrow-right"></i></a>
+              <a
+                href="category.html"
+                class="btn btn-outline-dark-2 btn-block mb-3"
+                ><span>CONTINUE SHOPPING</span><i class="icon-refresh"></i ></a>
+            </div>
+            <!-- .End .tab-pane -->
+			
+			<% } %>
+          </aside>
+          <!-- End .col-lg-3 -->
+        </div>
+        <!-- End .row -->
+      </div>
+      <!-- End .container -->
+    </div>
+    <!-- End .cart -->
+  </div>
+</main>
+
+
+<!-- <button id="rzp-button1">Pay</button> -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "rzp_test_9zuaMGnBpzoHQX", // Enter the Key ID generated from the Dashboard
+    "amount": "<%=amount%>", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "INR",
+    "name": "Acme Corp", //your business name
+    "description": "Test Transaction",
+    "image": "https://example.com/your_logo",
+    "order_id": "<%=payorder.id%>", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+		window.location.href="/ordersuccess"
+        
+    },
+    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+        "name": "Gaurav Kumar", //your customer's name
+        "email": "gaurav.kumar@example.com", 
+        "contact": "9000090000"  //Provide the customer's phone number for better conversion rates 
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+});
+document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+</script>
+<!-- <script>
+ $(document).ready(function () {
+	$('#payment').on('click',function(){
+		console.log('button');
+  var total =$('#total').val()
+  console.log(total);
+	})	
+ 	})
+
+</script> -->
+
+
+
+<%- include('../partials/userfooter') %>

@@ -80,7 +80,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="input-upload">
-                                            <img src="/upload/<%=product.productImage %>" alt="">
+                                            <img src="/upload/<%=product.productImage[0] %>" alt="">
                                             
                                             <input class="form-control" type="file" name="productImage">
                                         </div>
@@ -93,7 +93,7 @@
                                         <div class="mb-4">
                                             <label class="form-label">Price</label>
                                             <input type="text" placeholder="<%= product.price %>"
-                                                class="form-control" name="productPrice"
+                                                class="form-control" name="price"
                                                 value="<%= product.price %>" required>
                                         </div>
 

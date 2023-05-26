@@ -24,6 +24,7 @@ user_route.use(flash());
 user_route.use(express.static("public")); 
 
 user_route.get("/",userController.landing_Page);
+user_route.get("/t-shirtpage",userController.tshirt_page)
 // User logIn
 user_route.get('/login',auth.isLogout,userController.loading_loginpage)
 user_route.post('/login',userController.verify_login)
@@ -48,18 +49,16 @@ user_route.get('/incrementproduct',userController.increment_product);
 user_route.get('/deletecartitem',userController.delete_cartitem)
 
 
-// route for whishlist
+// route for wishlist
 user_route.get('/whishlist',auth.isLogin,userController.load_whishlist)
 user_route.get('/addtowhishlist',userController.add_to_whishlist);
+user_route.get('/deletewhishlistitem',userController.delete_wishlist);
 
 // USER PROFILE
-
 user_route.get('/profile',auth.isLogin,userController.load_profile);
-
-//#address route
+user_route.post('/edituserdeatils',userController.edituser_Details);
 user_route.post('/addaddress',userController.add_address);
 user_route.get('/deleteaddress',userController.delete_address);
-// #update_user_password
 user_route.post('/updatepassword',userController.update_password);
 user_route.get('/logout',userController.log_out)
 // checkout page
@@ -69,8 +68,10 @@ user_route.get('/checkvalidcoupon',userController.checkvalid_Coupon)
 user_route.post('/orderdeatils',userController.order_Details);
 user_route.get('/cancelorderitem',userController.cancel_oder);
 user_route.get('/orderhistory',userController.order_histroy);
+user_route.get('/retunorder',userController.return_order);
 
 user_route.get('/onlinepayment',userController.razorpay_method);
+user_route.get('/ordersuccess',userController.ordersuccess_page);
 
 
 module.exports = user_route;
