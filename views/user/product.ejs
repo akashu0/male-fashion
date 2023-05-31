@@ -12,6 +12,12 @@
             <div class="toolbox">
                 <div class="toolbox-left">
                     <a href="#" class="sidebar-toggler"><i class="icon-bars"></i>Filters</a>
+                    <form >
+                        <div class="header-search-wrapper">
+                            <label for="q" class="sr-only">Search</label>
+                            <input type="search" class="form-control" name="search" id="q" placeholder="Search in..." required>
+                        </div><!-- End .header-search-wrapper -->
+                    </form>
                 </div><!-- End .toolbox-left -->
             </div><!-- End .toolbox -->
 
@@ -23,7 +29,7 @@
                         <div class="product">
                             <figure class="product-media">
                                 <% if (product.productImage && product.productImage.length > 0) { %>
-                                    <a href="/viewproduct?id=<%=product.id %>">
+                                    <a href="/viewproduct?id=<%=product.slug%>">
                                     <img src="upload/<%=product.productImage[0] %>" alt="Product image" class="product-image">
                                     <img src="upload/<%=product.productImage[1] %>" alt="Product image" class="product-image-hover">
                                      </a>
@@ -118,30 +124,22 @@
                         <div class="collapse show" id="widget-1">
                             <div class="widget-body">
                                 <div class="filter-items filter-items-count">
-                                
+                        
 
                                     <div class="filter-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="cat-2">
-                                            <label class="custom-control-label" for="cat-2">All</label>
-                                        </div><!-- End .custom-checkbox -->
-                                        <span class="item-count">0</span>
-                                    </div><!-- End .filter-item -->
-
-                                    <div class="filter-item">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="cat-3">
+                                        <div class="custom-control custom-checkbox"> 
+                                            <input type="checkbox" class="custom-control-input" name="T-shirts" id="cat-3">
                                             <label class="custom-control-label" for="cat-3">T-shirts</label>
                                         </div><!-- End .custom-checkbox -->
-                                        <span class="item-count">4</span>
+                                       
                                     </div><!-- End .filter-item -->
 
                                     <div class="filter-item">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="cat-4">
+                                            <input type="checkbox" class="custom-control-input" name="Shirts" id="cat-4">
                                             <label class="custom-control-label" for="cat-4">Shirts</label>
                                         </div><!-- End .custom-checkbox -->
-                                        <span class="item-count">2</span>
+                                      
                                     </div><!-- End .filter-item -->
                                 </div><!-- End .filter-items -->
                             </div><!-- End .widget-body -->
@@ -160,28 +158,28 @@
                                 <div class="filter-items">
                                     <div class="filter-item">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="size-2">
+                                            <input type="checkbox" class="custom-control-input" id="size-2" name="S">
                                             <label class="custom-control-label" for="size-2">S</label>
                                         </div><!-- End .custom-checkbox -->
                                     </div><!-- End .filter-item -->
 
                                     <div class="filter-item">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" checked id="size-3">
+                                            <input type="checkbox" class="custom-control-input" name="M"  id="size-3">
                                             <label class="custom-control-label" for="size-3">M</label>
                                         </div><!-- End .custom-checkbox -->
                                     </div><!-- End .filter-item -->
 
                                     <div class="filter-item">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" checked id="size-4">
+                                            <input type="checkbox" class="custom-control-input" name="L"  id="size-4">
                                             <label class="custom-control-label" for="size-4">L</label>
                                         </div><!-- End .custom-checkbox -->
                                     </div><!-- End .filter-item -->
 
                                     <div class="filter-item">
                                         <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="size-5">
+                                            <input type="checkbox" class="custom-control-input" name="XL" id="size-5">
                                             <label class="custom-control-label" for="size-5">XL</label>
                                         </div><!-- End .custom-checkbox -->
                                     </div><!-- End .filter-item -->
@@ -190,6 +188,9 @@
                         </div><!-- End .collapse -->
                     </div><!-- End .widget -->
                 </div><!-- End .sidebar-filter-wrapper -->
+                <div class="d-flex justify-content-around">
+                <a id="filter" class="btn  btn-outline-primary-2 ">Filters</a>
+            </div>
             </aside><!-- End .sidebar-filter -->
         </div><!-- End .container -->
     </div><!-- End .page-content -->
@@ -273,7 +274,28 @@
       
     });
   });
+//  filter product according to the information provide by
+$('#filter').click(function(){
+    console.log("clicked"); 
+    const selectedfields = $('input[type="checkbox"]:checked').map(function() {
+  return $(this).attr('name');
+  }).get();
+    console.log(selectedfields);
+  var data = {
+    search : selectedfields
+  }
 
+  $.ajax({
+    url: '/filterproduct',
+    method:"post",
+    data:data,
+
+    success:function(response){
+   console.log(response.message);
+    }
+  })
+   
+})
 
 </script>
 <%- include('../partials/userfooter') %>

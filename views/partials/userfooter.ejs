@@ -214,6 +214,62 @@
 <!-- Main JS File -->
 <script src="assets/js/main.js"></script>
 <script src="assets/js/demos/demo-6.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.6.4.slim.js" integrity="sha256-dWvV84T6BhzO4vG6gWhsWVKVoa4lVmLnpBOZh/CAHU4=" crossorigin="anonymous"></script> -->
+<script>
+
+$('#searchproduct').click(function(){
+    console.log("button clicked");
+   var text = $('#qwe').val()
+   console.log(text); 
+
+   if(text.trim() == ''){
+    return
+   }
+var data = {
+    text:text
+}
+$.ajax({
+    url:'/searchproduct',
+    method:'post',
+    data: data,
+
+    success:function(response){
+   console.log(response.message);
+   console.log(response.product);
+  if(response.message == "product avilable"){
+
+    const dropdownMenu = $(".dropdown-menu");
+    dropdownMenu.empty(); 
+
+    response.product.forEach(function (product) {
+      const productHTML = `
+        <div class="product">
+          <div class="product-cart-details">
+            <h4 class="product-title">
+              <a class="" href="/viewproduct?id=${product.slug}"><small>${product.productName}</small></a>
+            </h4>
+            <span class="cart-product-info">Rs.${product.price}</span>
+          </div>
+          <figure class="product-image-container">
+            <a href="product.html" class="product-image">
+              <img src="upload/${product.productImage[0]}" alt="product" width="20px" height="20">
+            </a>
+          </figure>
+        </div>
+      `;
+      dropdownMenu.append(productHTML); 
+    });
+  }
+
+
+    }
+   
+})
+
+})
+
+
+</script>
 
  
 </body>

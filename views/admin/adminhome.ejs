@@ -6,7 +6,7 @@
                     <!-- <p>Whole data about your business here</p> -->
                 </div>
                 <div>
-                    <a href="#" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create report</a>
+                    <a href="/admin/ExcelSalesData" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create report</a>
                 </div>
             </div>
             <div class="row">
@@ -83,24 +83,7 @@
                 </div>
             </div>
             <div class="card mb-4">
-                <header class="card-header">
-                    <h4 class="card-title">Latest orders</h4>
-                    <div class="row align-items-center">
-                        
-                        
-                        <div class="col-md-2 col-6">
-                            <div class="custom_select">
-                                <select class="form-select select-nice">
-                                    <option selected>Status</option>
-                                    <option>All</option>
-                                    <option>Paid</option>
-                                    <option>Awaiting payment</option>
-                                    <option>Refund</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </header>
+               
                 <div class="card-body">
                     <div class="table-responsive">
                         <div class="table-responsive">
@@ -123,7 +106,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                  
                                  <% if(orders)  { %>
+                                  
                                  <% orders.forEach(function(orders) { %>  
                                     <tr>
                                         <td class="text-center">
@@ -139,7 +124,11 @@
                                            Rs.<%=orders.total%>
                                         </td>
                                         <td>
+                                            <% if(orders.paymentStatus == "paid")  { %>
                                             <span class="badge badge-pill badge-soft-success">Paid</span>
+                                            <% } else{ %>
+                                                <span class="badge badge-pill badge-soft-danger">Unpaid</span>
+                                                <% } %>
                                         </td>
                                         <td>
                                             <i class="material-icons md-payment font-xxl text-muted mr-5"></i> 
@@ -159,18 +148,7 @@
                     </div> <!-- table-responsive end// -->
                 </div>
             </div>
-            <div class="pagination-area mt-30 mb-50">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-start">
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                        <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
-                    </ul>
-                </nav>
-            </div>
+            
         </section> <!-- content-main end// -->
         <script src="https://code.jquery.com/jquery-3.6.4.slim.js"
         integrity="sha256-dWvV84T6BhzO4vG6gWhsWVKVoa4lVmLnpBOZh/CAHU4=" crossorigin="anonymous"></script>

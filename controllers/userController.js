@@ -12,7 +12,7 @@ const bcryptjs = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 const mongoose = require("mongoose");
-const Razorpay =require('razorpay');
+const Razorpay =require("razorpay");
 
 // password decrypt
 const securepassword = async (password) => {
@@ -33,6 +33,7 @@ const landing_Page = async (req, res) => {
     res.render("home",{banner: banner,product: product});
   } catch (error) {
     console.log(error.message);
+    res.status(404).render('error',{error})
   }
 };
 
@@ -41,7 +42,6 @@ const landing_Page = async (req, res) => {
 const tshirt_page = async(req,res)=>{
 try {
   const catergory_name = req.query.id
-  console.log(catergory_name);
  const category_data = await Category.findOne({ categoryName: catergory_name})
 if(category_data){
   const cat_id = category_data._id
@@ -286,14 +286,33 @@ const otp_verify = async (req, res) => {
 const load_productpage = async(req,res)=>{
 
   try {
+    var search = '';
+    if(req.query.search){
+      search = req.query.search
+    }
+
     var page = 1;
     if(req.query.page){
      page = req.query.page
     }
     const limit = 4;
 
-    const product_data = await Product.find({}).populate('category_id').limit(limit * 1).skip((page - 1) * limit).exec();
-    const count = await Product.find({}).populate('category_id').countDocuments();
+    const product_data = await Product.find({
+      $or:[
+        {productName:{$regex: '.*'+search+'.*',$options:'i'}},
+        {productColor:{$regex: '.*'+search+'.*',$options:'i'}},
+        {price:{$regex: '.*'+search+'.*',$options:'i'}},
+
+      ]
+    }).populate('category_id').limit(limit * 1).skip((page - 1) * limit).exec();
+    const count = await Product.find({
+      $or:[
+        {productName:{$regex: '.*'+search+'.*',$options:'i'}},
+        {productColor:{$regex: '.*'+search+'.*',$options:'i'}},
+        {price:{$regex: '.*'+search+'.*',$options:'i'}},
+
+      ]
+    }).populate('category_id').countDocuments();
 
     if(product_data){
      res.render('product',{product: product_data, totalpage : Math.ceil(count/limit), currentpage: page});
@@ -309,18 +328,50 @@ const load_productpage = async(req,res)=>{
 // VIEWPRODUCT PAGE
 const load_viewproduct = async (req, res) => {
   try {
-    const productid = req.query.id;
-    const productdata = await Product.findById({ _id: productid }).populate('category_id');
+    const slugid = req.query.id;
+    const productdata = await Product.findOne({ slug: slugid }).populate('category_id');
     res.render("viewproduct", { data: productdata });
   } catch (error) {
     console.log(error.message);
+    res.status(404).render('error',{error})
   }
 };
+
+// filtering based on the selected checkbox
+const filter_product = async(req,res)=>{
+try {
+  const search = req.body.search
+  console.log(search);
+  // const product_data = await Product.find({
+  //   $or:[
+  //     {productName:{$regex: '.*'+search+'.*',$options:'i'}},
+  //     {productsize:{$regex: '.*'+search+'.*',$options:'i'}},
+  //     // {price:{$regex: '.*'+search+'.*',$options:'i'}},
+
+  //   ]
+  // })
+ const categoryQueries = search.map(category => ({ productName: { $regex: '.*' + category + '.*', $options: 'i' } }));
+const sizeQueries = search.map(size => ({ productSize: { $regex: '.*' + size + '.*', $options: 'i' } }));
+
+const query = {
+  $or: [
+    ...categoryQueries,
+    ...sizeQueries
+  ]
+};
+
+const product_data = await Product.find(query);
+  console.log(product_data);
+} catch (error) {
+  console.log(error.message);
+
+  
+}
+}
 
 // ----------------CART------------------
 
 // #laad cart page
-
 const load_cart = async (req, res) => {
   try {
     const userid = req.session.user_id;
@@ -331,7 +382,7 @@ const load_cart = async (req, res) => {
     if (cartData) {
       res.render("cart", { cart: cartData });
     } else {
-      res.render("cart", { message: "Cart is empty plz shop"});
+      res.render("cart", {cart: null});
     }
   } catch (error) {
     console.log(error.message);
@@ -339,7 +390,7 @@ const load_cart = async (req, res) => {
 };
 
 // #add to cart methode
-const add_to_cart = async (req, res) => {
+const  add_to_cart = async (req, res) => {
   try {
     const userId = req.session.user_id;
     const product_id = req.query.id;
@@ -388,6 +439,7 @@ const increment_product = async (req, res) => {
       const productupdate = await Product.updateOne(
         { _id: prodid },
         { $inc: { isselected: 1 } }
+
       );
       res.send({ message: "1" });
     } else {
@@ -685,10 +737,13 @@ const order_Details = async (req, res) => {
     const method = req.body.paymentmethod;
     const couponAmount = req.body.discount;
     const totalAmount = parseInt(req.body.purchase);
-    const itemquantity = req.body.itemquantity;
     const address = req.body.address;
     const categoryId = req.body.categoryId;
-    const productdeatils = await Cart.findOne({ userId: userId });
+    const productdeatils = await Cart.findOne({ userId: userId }).populate('product.product_id')
+    const productQ = productdeatils.product.map(function (item) {
+      return item.product_id.isselected; 
+    });
+    console.log(productQ);
     const productIds = productdeatils.product.map(function (item) {
       return item.product_id;
     });
@@ -698,18 +753,31 @@ const order_Details = async (req, res) => {
       coupon: couponAmount,
       address: address,
       paymentMethod: method,
-      itemquantity: itemquantity,
       category_id: categoryId,
     });
 
-    // Push each product ID to the product field of the order
-    for (const productId of productIds) {
+   if(method =="COD"){
+    order_details.paymentStatus = "paid" 
+   }
+
+    // Push each  product ID and Quantity to the product field of the order
+    for (let i = 0; i < productIds.length; i++) {
+      const productId = productIds[i];
+      const quantity = productQ[i];
+    
       order_details.product.push({
         product_id: productId,
+        Quantity: quantity,
       });
     }
     const data = await order_details.save();
+    await Product.updateMany(
+      { _id: { $in: productIds } }, // Filter by the product IDs
+      { $set: { isselected: 1 } } // Update the isselected field to 1
+    );
+   
     if (data) {
+      await Cart.findOneAndDelete({userId: userId})
       res.send({ message: "1", send: data });
     } else {
       res.send({ message: "0", send: data });
@@ -774,6 +842,7 @@ res.redirect('/checkout')
 // after online payment succes page
 const ordersuccess_page = async(req,res)=>{
 try {
+
   res.render('paymentsuccess')
 } catch (error) {
   console.log(error.message);
@@ -794,14 +863,36 @@ if (order_update) {
 } else {
   res.send({ message: "0" });
 }
-
 } catch (error) {
   console.log(error.message);
 }
 }
 
+// This search method for the  userheader search icon  where user can search product base name,color and also can include price,
+// when product dynamically shown user can click the product, it redirect to single product page where can view product deatils
+const search_product = async(req,res)=>{
+try {
+const search = req.body.text;
+  const product_data = await Product.find({
+    $or:[
+      {productName:{$regex: '.*'+search+'.*',$options:'i'}},
+      {productColor:{$regex: '.*'+search+'.*',$options:'i'}},
+      // {price:{$regex: '.*'+search+'.*',$options:'i'}},
+
+    ]
+  })
+  if(product_data.length > 0){
+    res.send({message:"product avilable",product: product_data})
+  }else{
+    res.send( {message:"product not found"})
+
+  }
+} catch (error) {
+  
+}
 
 
+}
 
 
 module.exports = {
@@ -838,6 +929,8 @@ module.exports = {
   delete_wishlist,
   ordersuccess_page,
   return_order,
-  edituser_Details
+  edituser_Details,
+  search_product,
+  filter_product
   
 };

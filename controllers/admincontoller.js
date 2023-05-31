@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const Order = require("../models/orderModel");
 const Coupon = require("../models/couponModel");
 const Banner = require('../models/banner');
-
+const excelJs = require('exceljs');
 // ---admin login page
 const login_Page = async (req, res) => {
   try {
@@ -44,6 +44,21 @@ const verify_login = async (req, res) => {
   }
 };
 
+// adminlogout request button
+
+const admin_logout = async(req,res)=>{
+try {
+  req.session.destroy();
+  res.redirect('/admin')
+} catch (error) {
+  console.log(error.message);
+  
+}
+
+}
+
+
+
 // loading dashboad with deatils of each sections like user count, product count,order details
 const load_dashboard = async (req, res) => {
   try {
@@ -79,9 +94,7 @@ const get_saledata = async (req, res) => {
           totalSales: { $sum: "$total" }
         }
       }
-    ]);
-  //  console.log(categorySales);    
-  //  console.log(salesData);    
+    ]);  
    res.json({ salesData: salesData, categorySales: categorySales });  
   } catch (error) {
     console.log(error.message);
@@ -89,6 +102,37 @@ const get_saledata = async (req, res) => {
   }
 };
 
+// converting saledata into excel file and downloading the report
+const excel_saledata = async(req,res)=>{
+try {
+  const workbook = new excelJs.Workbook();
+  const worksheet = workbook.addWorksheet("Sale Data")
+  const revenue = await Order.aggregate([{ '$match': {"status": "Delivered"}},{'$group': {'_id': "null", "total": {"$sum": "$total"}}}])
+  const ordercount = await Order.find({}).count()
+  const product = await Product.find({}).count()
+  const user = await User.find({}).count();
+
+  worksheet.addRow(['Total Revenue',revenue[0].total]);
+  worksheet.addRow(["Order Count" ,ordercount]);
+  worksheet.addRow(["User Count",  user]);
+  worksheet.addRow(["Product Count",product]);
+
+  res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheatml.sheet");
+  res.setHeader("Content-Disposition", "attachment; filename=saledata.xlsx");
+  
+  return workbook.xlsx.write(res)
+    .then(() => {
+      res.status(200).end();
+    })
+    .catch(error => {
+      console.error(error);
+      res.status(500).end();
+    });
+} catch (error) {
+  console.log(error.message);
+  
+}
+}
 
 
 // --------USERS MANAGEMENT-----
@@ -268,13 +312,25 @@ const category_list = async (req, res) => {
     console.log(error.message);
   }
 };
-
+// adding category by admin also checking if category already available in database
 const add_category = async (req, res) => {
   try {
-    const categoryName = req.body.categoryName;
-    const CategoryDescription = req.body.CategoryDescription;
-   const category_details = await Category.findOne({categoryName: categoryName})
-   if(category_details){
+    const categoryName = req.body.categoryName.trim()
+    const CategoryDescription = req.body.CategoryDescription.trim()
+   if(categoryName == '' || CategoryDescription == '' ){
+    req.flash("title", "categoryName and CategoryDescription is required");
+    res.redirect('/admin/category')
+   } 
+
+  // find the all category and with map() methode checking if categoryName is matching existing categoryName and if it true redirecting with error message
+   const category_details = await Category.find({})
+   let  foundCategory;
+   category_details.forEach((category) => {
+   if(category.categoryName.toLowerCase() === categoryName.toLowerCase()){
+       foundCategory = true;
+  }
+});
+ if(foundCategory){
     req.flash("title", "Category already is Available");
     res.redirect('/admin/category')
    }else{
@@ -490,5 +546,7 @@ module.exports = {
   load_bannerpage,
   add_banner,
   delete_banner,
-  get_saledata
+  get_saledata,
+  admin_logout,
+  excel_saledata
 };

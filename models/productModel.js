@@ -1,4 +1,6 @@
 const mongoose =require("mongoose");
+const slugify = require('slugify');
+
 
 
  const productSchema =  mongoose.Schema({
@@ -46,12 +48,36 @@ const mongoose =require("mongoose");
         required: true,
         validate:[arraylimit,"maximun 3 product image"]
      },
+     slug: {
+        type: String,
+        unique: true,
+       
+      }
     
     });
 
     function arraylimit(val) {
         return val.length <= 3;
     }
+    productSchema.pre('save', async function (next) {
+        if (this.isModified('productName') || !this.slug) {
+          const slug = slugify(this.productName, { lower: true });
+      
+          let existingUser = await this.constructor.findOne({ slug: slug });
+          if (existingUser) {
+            let counter = 1;
+            while (existingUser) {
+              this.slug = `${slug}-${counter}`;
+              counter++;
+              existingUser = await this.constructor.findOne({ slug: this.slug });
+            }
+          } else {
+            this.slug = slug;
+          }
+        }
+      
+        next();
+      });
 
 
     module.exports = mongoose.model("Product",productSchema);

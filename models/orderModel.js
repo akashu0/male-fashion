@@ -13,6 +13,10 @@ const mongoose= require('mongoose');
         ref:"Product",
         required: true
     },
+    Quantity:{
+        type: Number,
+        required:true
+    }
     }],
     total:{
         type:Number,
@@ -39,14 +43,14 @@ orderDate:{
     type: Date,
     default: Date.now
 },
-itemquantity:{
-    type:Number,
-    required:true
-},
 category_id:{
     type: mongoose.Schema.Types.ObjectId,
      ref: 'Category',
      required:true, 
+},
+paymentStatus:{
+    type:String,
+    default: "Unpaid"
 }
 
  })

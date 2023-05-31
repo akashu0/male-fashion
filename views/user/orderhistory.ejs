@@ -67,8 +67,16 @@
 											<td ><%=order.total%></td>
 										</tr>
                                         <tr>
-											<td>paymentMethod</td>
+											<td>payment Method</td>
 											<td ><%=order.paymentMethod%></td>
+										</tr>
+										<tr>
+											<td>payment Status</td>
+											<% if(order.paymentStatus == "paid")  { %>
+											<td class="text-success"><%=order.paymentStatus%></td>
+											<% } else{ %>
+											<td class="text-success"><%=order.paymentStatus%></td>
+											<% } %>
 										</tr>
                                         <tr>
 											<td>Order Date</td>

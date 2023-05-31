@@ -107,13 +107,16 @@
 															<a data-returnorder="<%=order._id%>" class="btn  btn-outline-primary-2 return">RETURN</a>
 															<% } else if(order.status == "Return") { %>
 																<a  class="btn  btn-outline-primary-2">Order cancelled</a>
-																
 															<% }  else { %>
 																<a  class="btn  btn-outline-primary-2"><%=order.status%></a>
 																<% } %>	
 
+                                                                <% if(order.paymentStatus == "Unpaid"){ %>
+																<a  class="btn bg-danger btn-outline-primary-2">Unpaid</a>
 
+                                                                    <% }  else { %>
 															<a href="/orderhistory?id=<%=order._id%>" class="btn  btn-outline-primary-2">View Details</a>
+                                                            <% } %>	
 														</td> 
 														<% if(order.status == "Delivered" || order.status == "Return"){ %>
 															

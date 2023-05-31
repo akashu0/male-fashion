@@ -4,7 +4,7 @@
     <div class="content-header">
         <div>
             <h2 class="content-title card-title">Order detail</h2>
-            <p>Details for Order ID: 3453012</p>
+            <p>Details for Order ID:  #<%=order._id%></p>
         </div>
     </div>
     <div class="card">
@@ -132,8 +132,10 @@
                         <h6  class="mb-15">Payment status</h6>
                         <% if(order.status == "Return"){ %>
                         <span class="badge rounded-pill alert-danger">Refund</span> 
-                        <% }  else { %>
+                        <% }  else if (order.paymentStatus == "paid") { %>
                             <span class="badge badge-pill badge-soft-success">Paid</span>
+                            <% }  else  { %>
+                            <span class="badge badge-pill badge-soft-danger">Unpaid</span>
                             <% } %>	
                     </div>
                     <div class="h-25 pt-4">

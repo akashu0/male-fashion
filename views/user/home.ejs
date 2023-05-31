@@ -54,8 +54,8 @@
 
                                 <div class="banner-content banner-content-center">
                                     <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4><!-- End .banner-subtitle -->
-                                    <h3 class="banner-title text-white"><a href="#"><strong>T-shirt’s</strong></h3><!-- End .banner-title -->
-                                    <a href="/t-shirtpage?id=<%=banner._id %>" class="btn btn-outline-white banner-link underline">Shop Now</a>
+                                    <h3 class="banner-title text-white"><a href="/t-shirtpage?id=<%=banner[3].name%>"><strong>T-shirt’s</strong></a></h3><!-- End .banner-title -->
+                                    <a href="/t-shirtpage?id=<%=banner[3].name%>" class="btn btn-outline-white banner-link underline">Shop Now</a>
                                 </div><!-- End .banner-content -->
                             </div><!-- End .banner -->
                         </div><!-- End .col-sm-6 -->
@@ -68,8 +68,8 @@
 
                                 <div class="banner-content banner-content-center">
                                     <h4 class="banner-subtitle text-white"><a href="#">New in</a></h4><!-- End .banner-subtitle -->
-                                    <h3 class="banner-title text-white"><a href="#"><strong>Shirt’s</strong></a></h3><!-- End .banner-title -->
-                                    <a href="#" class="btn btn-outline-white banner-link underline">Shop Now</a>
+                                    <h3 class="banner-title text-white"><a href="/t-shirtpage?id=<%=banner[2].name%>"><strong>Shirt’s</strong></a></h3><!-- End .banner-title -->
+                                    <a href="/t-shirtpage?id=<%=banner[2].name%>" class="btn btn-outline-white banner-link underline">Shop Now</a>
                                 </div><!-- End .banner-content -->
                             </div><!-- End .banner -->
                         </div><!-- End .col-sm-6 -->
@@ -207,11 +207,11 @@
                                    
 
                                     <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to wishlist</span></a>
+                                        <a role="button"  data-whishlist="<%=product.id %>" class="btn-product-icon btn-wishlist btn-expandable addtowhishlist"><span>add to wishlist</span></a>
                                     </div><!-- End .product-action-vertical -->
 
                                     <div class="product-action">
-                                        <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                        <a href="/addtocart?id=<%=product.id %>" data-proid="<%=product.id %>" class="btn-product btn-cart "><span>add to cart</span></a>
                                     </div><!-- End .product-action -->
                                 </figure><!-- End .product-media -->
 
@@ -724,5 +724,79 @@
                 </div><!-- End .container -->
             </div><!-- End .blog-posts -->
         </main><!-- End .main -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.slim.js" integrity="sha256-dWvV84T6BhzO4vG6gWhsWVKVoa4lVmLnpBOZh/CAHU4=" crossorigin="anonymous"></script>
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+        <script>
+          $(".addtocartbutton").click(function () {
+            console.log("button clicked");
+            let productid = $(this).data('proid');
+            console.log(productid);
+            $.ajax({
+              url: "/addtocart?id=" + productid,
+              type: "GET",
+              success: function (response) {
+               if(response.message == "1"){
+                console.log('response is back');
+                Swal.fire({
+                
+                          title: "success",
+                          text: "Item is alerady add to cart",        
+                          icon: "info",
+                          confirmButtonText: "OK"
+                         }); 
+        
+               }else{
+                console.log('response is back');
+                Swal.fire({
+                          title: "success",
+                          text: "added to cart",        
+                          icon: "success",
+                          confirmButtonText: "OK"
+                         }); 
+               }
+              }
+            });
+          });
+        
+          // whishlist script
+          $(".addtowhishlist").click(function () {
+            console.log("button clicked");
+            let productid = $(this).data("whishlist");
+            console.log(productid);
+        
+            $.ajax({
+              url: "/addtowhishlist?id=" + productid,
+              type: "GET",
+              success: function (response) {
+                if(response.message == "1"){
+                console.log('response is back');
+                Swal.fire({
+                
+                          title: "success",
+                          text: "Item is alerady add to wishlist",        
+                          icon: "info",
+                          confirmButtonText: "OK"
+                         }); 
+        
+               }else{
+                console.log('response is back');
+                Swal.fire({
+                          title: "success",
+                          text: "added to wishlist",        
+                          icon: "success",
+                          confirmButtonText: "OK"
+                         }); 
+               }
+              }
+              
+            });
+          });
+        
+        
+        </script>
+
+
        
         <%- include('../partials/userfooter') %>

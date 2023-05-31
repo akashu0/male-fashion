@@ -149,7 +149,7 @@
           <% if (cart.length > 0) { %>
           <aside class="col-lg-3">
             <div class="summary summary-cart">
-              <h3 class="summary-title">Cart Total</h3>
+              <h3 class="summary-title">Order Summary</h3>
              
 
               <table id="mytabel" class="table table-summary">
@@ -168,7 +168,6 @@
                     <td><%=product.product_id.productName%></td>
                     <input type="hidden" class="category_id" value="<%=product.product_id.category_id%>">  
                     <% let total = product.product_id.price * product.product_id.isselected%>
-                    <input type="hidden" class="itemquantity" value="<%=product.product_id.isselected%>">
                     <td class="Rs"><%=total%></td>
                   </tr> 
 
@@ -399,7 +398,7 @@
     }
   });
 
-
+// coupon validation 
   $(document).ready(function() {
   $(".sub").on("click", function () {
     console.log("clicked");
@@ -489,7 +488,6 @@
     ).data("method");
     var discount = $("#dis").text().trim();
     var purchase = $("#finaltotal").text().trim();
-    var itemquantity = $(".itemquantity").val();
     var categoryId =$('.category_id').val()
           console.log(categoryId);
     var data = {
@@ -497,7 +495,6 @@
       discount: discount,
       purchase: purchase,
       address: address,
-      itemquantity: itemquantity,
       categoryId: categoryId,
     };
     $.ajax({

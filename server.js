@@ -1,5 +1,18 @@
+require("dotenv").config();
+
+// mongodb connection start
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://127.0.0.1:27017/E");
+  mongoose.connect(process.env.dbconnect,{ useNewUrlParser: true })
+      .then((response) => {
+          console.log("database connected successfully......");
+      })
+      .catch((err) => {
+          console.log(err);
+      })
+
+
+// db connection end 
+
 
 const express = require("express");
 const app = express();

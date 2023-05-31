@@ -163,7 +163,7 @@ var options = {
     "image": "https://example.com/your_logo",
     "order_id": "<%=payorder.id%>", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
     "handler": function (response){
-		window.location.href="/ordersuccess"
+		window.location.href="/ordersuccess" 
         
     },
     "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
@@ -193,16 +193,6 @@ document.getElementById('rzp-button1').onclick = function(e){
     e.preventDefault();
 }
 </script>
-<!-- <script>
- $(document).ready(function () {
-	$('#payment').on('click',function(){
-		console.log('button');
-  var total =$('#total').val()
-  console.log(total);
-	})	
- 	})
-
-</script> -->
 
 
 
