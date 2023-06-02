@@ -29,7 +29,7 @@ const userController = require("../controllers/userController");
 
 
 user_route.get("/",userController.landing_Page);
-user_route.get("/t-shirtpage",userController.tshirt_page)
+user_route.get("/t-shirtpage",auth.isLogin,userController.tshirt_page)
 // search product
 user_route.post("/searchproduct",userController.search_product)
 
@@ -83,6 +83,8 @@ user_route.get('/retunorder',auth.isLogin,userController.return_order);
 
 user_route.get('/onlinepayment',auth.isLogin,userController.razorpay_method);
 user_route.get('/ordersuccess',auth.isLogin,userController.ordersuccess_page);
+
+// 
 
 
 module.exports = user_route;

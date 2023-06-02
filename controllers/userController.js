@@ -31,9 +31,9 @@ const landing_Page = async (req, res) => {
     const banner = await Banner.find({})
     const product = await Product.find({})
     res.render("home",{banner: banner,product: product});
+
   } catch (error) {
-    console.log(error.message);
-    res.status(404).render('error',{error})
+    res.render('error',{error})
   }
 };
 
@@ -55,7 +55,7 @@ if(category_data){
   res.redirect('/')
 }
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
 }
 
 } 
@@ -67,7 +67,7 @@ const loading_loginpage = async (req, res) => {
     const title = req.flash("title");
     res.render("login", { title: title[0] || "" ,});
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -98,7 +98,7 @@ const verify_login = async (req, res) => {
       res.redirect("/login");
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -109,7 +109,7 @@ const load_signup = async (req, res) => {
     const title = req.flash("title");
     res.render("signup",{ title: title[0] || "" ,});
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -134,8 +134,7 @@ const register_user = async (req, res) => {
       res.redirect("/login");
     }
   } catch (error) {
-    res.status(400);
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -146,7 +145,7 @@ const otp_page = async (req, res) => {
     const title = req.flash("title");
     res.render("otppage", { title: title[0] || "" });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -194,7 +193,7 @@ const opt_singIn = async (req, res) => {
       res.redirect("/logwithotp");
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -204,7 +203,7 @@ const load_otpverifypage = async (req, res) => {
     const title = req.flash("title");
     res.render("otpverify", { title: title[0] || "" });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -234,53 +233,11 @@ const otp_verify = async (req, res) => {
       res.redirect("/logwithotp");
     }
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send({ message: "Server Error" });
+      res.render('error',{error:error.message})
   }
 };
 
 //--------------------------PRODUCT PAGE----------------
-// Loading product page with catergory and produtc deatils
-
-// const load_productpage = async (req, res) => {
-//   try {
-//     const send_data = [];
-//     const catergoryData = await Category.find();
-//     if (catergoryData.length > 0) {
-//       for (let i = 0; i < catergoryData.length; i++) {
-//         const product_data = [];
-//         const cat_id = catergoryData[i]["_id"].toString();
-//         const cat_pro = await Product.find({ category_id: cat_id });
-//         if (cat_pro.length > 0) {
-//           for (let j = 0; j < cat_pro.length; j++) {
-//             product_data.push({
-//               id: cat_pro[j]["_id"],
-//               product_name: cat_pro[j]["productName"],
-//               product_color: cat_pro[j]["productColor"],
-//               product_size: cat_pro[j]["productSize"],
-//               product_price: cat_pro[j]["price"],
-//               productDes: cat_pro[j]["productDes"],
-//               image: cat_pro[j]["productImage"],
-//             });
-//           }
-//         }
-//         send_data.push({
-//           category: catergoryData[i]["categoryName"],
-//           product: product_data,
-//         });
-//       }
-//       res.render("productPage", { data: send_data });
-      
-//     } else {
-//       res.redirect("/", {
-//         msg: " Failed to get product page",
-//         data: send_data,
-//       });
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// };
 
 // all product is loading in a single page with category details
 const load_productpage = async(req,res)=>{
@@ -320,7 +277,7 @@ const load_productpage = async(req,res)=>{
     res.redirect('/');
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
   
 }
@@ -330,10 +287,13 @@ const load_viewproduct = async (req, res) => {
   try {
     const slugid = req.query.id;
     const productdata = await Product.findOne({ slug: slugid }).populate('category_id');
+    if(productdata){
     res.render("viewproduct", { data: productdata });
+    }else{
+      res.render('error',{error:"invalid request"})
+    }
   } catch (error) {
-    console.log(error.message);
-    res.status(404).render('error',{error})
+      res.render('error',{error:error.message})
   }
 };
 
@@ -341,31 +301,24 @@ const load_viewproduct = async (req, res) => {
 const filter_product = async(req,res)=>{
 try {
   const search = req.body.search
-  console.log(search);
-  // const product_data = await Product.find({
-  //   $or:[
-  //     {productName:{$regex: '.*'+search+'.*',$options:'i'}},
-  //     {productsize:{$regex: '.*'+search+'.*',$options:'i'}},
-  //     // {price:{$regex: '.*'+search+'.*',$options:'i'}},
+  const productSizes = search.filter(item => item === 'S' || item === 'M' || item === 'L' || item === 'XL');
+  const query = {};
 
-  //   ]
-  // })
- const categoryQueries = search.map(category => ({ productName: { $regex: '.*' + category + '.*', $options: 'i' } }));
-const sizeQueries = search.map(size => ({ productSize: { $regex: '.*' + size + '.*', $options: 'i' } }));
+  if (search.includes('T-shirt') || search.includes('Shirt')) {
+    query.productName = { $in: ['T-shirt', 'Shirt'] };
+  }
 
-const query = {
-  $or: [
-    ...categoryQueries,
-    ...sizeQueries
-  ]
-};
-
-const product_data = await Product.find(query);
-  console.log(product_data);
+  if (productSizes.length > 0) {
+    query.productSize = { $in: productSizes };
+  }
+ const match = await  Product.find(query).populate('category_id').exec();
+if(match){
+ res.send({message:"ok",product:match})
+}else{
+  res.send({message:"no"})
+}
 } catch (error) {
-  console.log(error.message);
-
-  
+    res.render('error',{error:error.message})
 }
 }
 
@@ -382,10 +335,10 @@ const load_cart = async (req, res) => {
     if (cartData) {
       res.render("cart", { cart: cartData });
     } else {
-      res.render("cart", {cart: null});
+      res.render("error", {error:"CART IS EMPTY"});
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -425,7 +378,7 @@ const  add_to_cart = async (req, res) => {
       res.send({ mes: "added", data: data });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -446,13 +399,12 @@ const increment_product = async (req, res) => {
       res.send({ message: "0" });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 const decrement_product = async (req, res) => {
   try {
     const prodid = req.query.id;
-    console.log(prodid);
     const userid = req.body.userid;
     const productupdate = await Product.updateOne(
       { _id: prodid },
@@ -460,7 +412,7 @@ const decrement_product = async (req, res) => {
     );
     res.send({ message: "1" });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // delete item from the cart
@@ -482,7 +434,7 @@ const delete_cartitem = async (req, res) => {
       res.send({ message: "0" });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -499,10 +451,11 @@ const load_whishlist = async (req, res) => {
     if (wishlist) {
       res.render("wishlist", { wishlist: wishlist });
     } else {
-      res.render("wishlist", { wishlist: "Wishlist is empty plz shop" });
+      res.render("error", { error: "Wishlist is Empty" });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
+   
   }
 };
 
@@ -543,7 +496,7 @@ const add_to_whishlist = async (req, res) => {
       res.send({ mes: "added", data: data });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -565,7 +518,7 @@ const delete_wishlist = async (req, res) => {
       res.send({ message: "0" });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -601,7 +554,7 @@ const load_profile = async (req, res) => {
       res.redirect("/login");
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -615,7 +568,7 @@ try {
     res.send({message:'0'})
   }
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
 }
 }
 
@@ -653,7 +606,7 @@ const add_address = async (req, res) => {
       res.status(200).redirect("/profile");
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // #DELETE ADDRESS
@@ -662,7 +615,7 @@ const delete_address = async (req, res) => {
     const address = await Address.findByIdAndDelete({ _id: req.query.id });
     res.send({ success: true, message: "Address is deleted" });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
     res
       .status(500)
       .send({ success: false, message: "Have some network issue" });
@@ -682,10 +635,10 @@ const update_password = async (req, res) => {
       );
       res.send({ success: true, message: "Your password has been updated" });
     } else {
-      res.send({ success: false, message: "User is not found" });
+      res.render( 'error',{error: "User is not found" });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -696,7 +649,7 @@ const log_out = async (req, res) => {
     req.session.destroy();
     res.redirect("/");
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // ------------checkout ------------
@@ -711,7 +664,7 @@ const   check_out = async (req, res) => {
     // res.render("checkout", { user: address, cart: cart });
     res.render("checkout", { user: address, cart: cart ,coupon: coupon});
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // checking for user enter coupon is valid or not
@@ -726,7 +679,7 @@ const checkvalid_Coupon = async (req, res) => {
       res.send({ message: "Coupon code invalid" });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // -------------------ORDER-------------
@@ -783,7 +736,7 @@ const order_Details = async (req, res) => {
       res.send({ message: "0", send: data });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // user  cancelling the one order or particular product
@@ -814,7 +767,7 @@ const order_histroy = async (req, res) => {
       res.redirect("/profile");
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -836,7 +789,7 @@ if(order_data){
 res.redirect('/checkout')
 }
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
 }
 }
 // after online payment succes page
@@ -845,7 +798,7 @@ try {
 
   res.render('paymentsuccess')
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
 }
 }
 // After receving the peoduct user want to return the product 
@@ -864,7 +817,7 @@ if (order_update) {
   res.send({ message: "0" });
 }
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
 }
 }
 
@@ -888,6 +841,7 @@ const search = req.body.text;
 
   }
 } catch (error) {
+  res.render('error',{error:error.message})
   
 }
 

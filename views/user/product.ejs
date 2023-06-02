@@ -22,9 +22,11 @@
             </div><!-- End .toolbox -->
 
             <div class="products">
-                <div class="row">
+                <div class="row" id="productList">
+               
                  <% if (product.length  > 0) { %> 
                     <% product.forEach(function(product) { %>
+                       
                     <div class="col-6 col-md-4 col-lg-4 col-xl-3">
                         <div class="product">
                             <figure class="product-media">
@@ -101,13 +103,12 @@
                         <% } %>
                     
                 </div><!-- End .row -->
-
-                <!-- <div class="load-more-container text-center">
-                    <a href="#" class="btn btn-outline-darker btn-load-more">More Products <i class="icon-refresh"></i></a>
-                </div> -->
+            
+                
             </div><!-- End .products -->
 
             <div class="sidebar-filter-overlay"></div><!-- End .sidebar-filter-overlay -->
+           
             <aside class="sidebar-shop sidebar-filter">
                 <div class="sidebar-filter-wrapper">
                     <div class="widget widget-clean">
@@ -291,11 +292,76 @@ $('#filter').click(function(){
     data:data,
 
     success:function(response){
-   console.log(response.message);
+   if(response.message == "ok"){
+
+    updateProductList(response.product);
+    $('.sidebar-toggler').removeClass('active')
+    $('.sidebar-filter-active').removeClass('sidebar-filter-active')
+   
+   }
     }
   })
    
 })
+
+function updateProductList(products) {
+  // Clear the existing product list
+  $('#productList').empty();
+
+  if (products.length > 0) {
+    // Loop through the products and append them to the product list
+    products.forEach(function(product) {
+      var html = `
+       
+        <div class="col-6 col-md-4 col-lg-4 col-xl-3">
+        <div class="product">
+          <figure class="product-media">
+            <!-- Product image -->
+            <a href="/viewproduct?id=${product.slug}">
+              <img src="upload/${product.productImage[0]}" alt="Product image" class="product-image">
+              <img src="upload/${product.productImage[1]}" alt="Product image" class="product-image-hover">
+            </a>
+            <!-- Product actions -->
+            <div class="product-action-vertical">
+              <a href="#" data-whishlist="${product.id}" class="addtowhishlist btn-product-icon btn-wishlist btn-expandable">
+                <span>Add to Wishlist</span>
+              </a>
+            </div>
+            <div class="product-action action-icon-top">
+              <a href="#" role="button" data-proid="${product.id}" class="addtocartbutton btn-product btn-cart">
+                <span>Add to Cart</span>
+              </a>
+            </div>
+          </figure>
+          <div class="product-body">
+            <!-- Product category -->
+            <div class="product-cat">
+              <a href="#">${product.category_id.categoryName}</a>
+            </div>
+            <!-- Product title -->
+            <h3 class="product-title">
+              <a href="product.html">${product.productName}</a>
+            </h3>
+            <!-- Product price -->
+            <div class="product-price">
+              Rs. ${product.price}
+            </div>
+          </div>
+        </div>
+        </div>
+      `;
+      
+      // Append the product HTML to the product list container
+      $('#productList').append(html);
+
+    });
+  } else {
+    // Show a message indicating no products found
+    $('#productList').html('<p>No products found.</p>');
+  }
+
+
+}
 
 </script>
 <%- include('../partials/userfooter') %>

@@ -34,11 +34,11 @@
                                         </a>
                                     <% } %>
                                     <div class="product-action-vertical">
-                                        <a href="#" class="btn-product-icon btn-wishlist btn-expandable"><span>add to
-                                                wishlist</span></a>
+                                        <a href="#"  data-whishlist="<%=product.id %>" class="addtowhishlist btn-product-icon btn-wishlist btn-expandable"><span>add to
+                                            wishlist</span></a>
                                     </div>
                                 <div class="product-action action-icon-top">
-                                    <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                    <a  role="button"   data-proid="<%=product.id %>" class="addtocartbutton btn-product btn-cart"><span>add to cart</span></a>
                                 </div><!-- End .product-action -->
                             </figure><!-- End .product-media -->
 
@@ -355,20 +355,76 @@
     </div><!-- End .page-content -->
 </main><!-- End .main -->
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.slim.js" integrity="sha256-dWvV84T6BhzO4vG6gWhsWVKVoa4lVmLnpBOZh/CAHU4=" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+<script>
+  $(".addtocartbutton").click(function () {
+    console.log("button clicked");
+    let productid = $(this).data('proid');
+    console.log(productid);
+    $.ajax({
+      url: "/addtocart?id=" + productid,
+      type: "GET",
+      success: function (response) {
+       if(response.message == "1"){
+        console.log('response is back');
+        Swal.fire({
+        
+                  title: "success",
+                  text: "Item is alerady add to cart",        
+                  icon: "info",
+                  confirmButtonText: "OK"
+                 }); 
 
+       }else{
+        console.log('response is back');
+        Swal.fire({
+                  title: "success",
+                  text: "added to cart",        
+                  icon: "success",
+                  confirmButtonText: "OK"
+                 }); 
+       }
+      }
+    });
+  });
 
+  // whishlist script
+  $(".addtowhishlist").click(function () {
+    console.log("button clicked");
+    let productid = $(this).data("whishlist");
+    console.log(productid);
 
+    $.ajax({
+      url: "/addtowhishlist?id=" + productid,
+      type: "GET",
+      success: function (response) {
+        if(response.message == "1"){
+        console.log('response is back');
+        Swal.fire({
+        
+                  title: "success",
+                  text: "Item is alerady add to wishlist",        
+                  icon: "info",
+                  confirmButtonText: "OK"
+                 }); 
 
+       }else{
+        console.log('response is back');
+        Swal.fire({
+                  title: "success",
+                  text: "added to wishlist",        
+                  icon: "success",
+                  confirmButtonText: "OK"
+                 }); 
+       }
+      }
+      
+    });
+  });
 
-
-
-
-
-
-
-
-
-
-
+</script>
 
 <%- include('../partials/userfooter') %>

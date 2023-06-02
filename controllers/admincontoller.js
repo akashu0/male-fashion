@@ -11,7 +11,7 @@ const login_Page = async (req, res) => {
   try {
     res.render("adminlogin");
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // --verify log deatils----
@@ -40,7 +40,7 @@ const verify_login = async (req, res) => {
       res.render("loginPage", { title: "Email and password is incorrect" });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -51,7 +51,7 @@ try {
   req.session.destroy();
   res.redirect('/admin')
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
   
 }
 
@@ -69,7 +69,7 @@ const load_dashboard = async (req, res) => {
     const user = await User.find({}).count()
     res.render("adminhome",{orders: orders,ordercount: ordercount,user: user, product: product,revenue: revenue });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -97,8 +97,7 @@ const get_saledata = async (req, res) => {
     ]);  
    res.json({ salesData: salesData, categorySales: categorySales });  
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ error: 'An error occurred' });
+      res.render('error',{error:error.message})
   }
 };
 
@@ -129,7 +128,7 @@ try {
       res.status(500).end();
     });
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
   
 }
 }
@@ -143,7 +142,7 @@ const load_users = async (req, res) => {
     const userData = await User.find({ is_admin: 0 });
     res.render("user", { users: userData });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -160,7 +159,7 @@ const block_user = async (req, res) => {
       res.send({ message: "User blocked successfully" });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 const unblock_user = async (req, res) => {
@@ -176,7 +175,7 @@ const unblock_user = async (req, res) => {
       res.send({ message: "User has been unblocked." });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -192,7 +191,7 @@ const load_productPage = async (req, res) => {
       res.redirect("/admin/dashboard");
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // ------- ADD PRODUCT---PAGE-----
@@ -202,7 +201,8 @@ const load_addproduct = async (req, res) => {
     const category = await Category.find({});
     res.render("addproduct", { category: category });
   } catch (error) {
-    console.log(error, message);
+    res.render('error',{error:error.message})
+
   }
 };
 
@@ -230,8 +230,7 @@ const add_product = async (req, res) => {
     res.status(200).redirect("/admin/product");
     // res.status(200).send({succces: true, msg:"product details",data:product_data})
   } catch (error) {
-    res.status(400).send({ succces: false, msg: error.message });
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // ---EDIT PRODUCT----
@@ -243,7 +242,7 @@ const edit_product = async (req, res) => {
 
     res.render("editproduct", { product: product_data });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 //---------UPDATE PRODUCT(EDIT-PRODUCT POST)---------
@@ -282,8 +281,7 @@ const update_product = async (req, res) => {
 
     res.redirect("/admin/product");
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send({ success: false, msg: error.message });
+      res.render('error',{error:error.message})
   }
 };
 
@@ -295,7 +293,7 @@ const delete_product = async (req, res) => {
     await Product.deleteOne({ _id: id });
     res.redirect("/admin/product");
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -309,7 +307,7 @@ const category_list = async (req, res) => {
     const title = req.flash("title");
     res.render("category", { category: categorydata ,title: title[0] || "" });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // adding category by admin also checking if category already available in database
@@ -344,7 +342,7 @@ const add_category = async (req, res) => {
   } 
     // res.send({ sucess: true, msg: "category is added", data: category_data });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // admin can list and unlist the category this is done by a ajax call with values of categoryid and list or unlist 
@@ -385,7 +383,7 @@ const list_unlist = async(req,res)=>{
     res.redirect('/admin/category')
   }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 }
 
@@ -397,7 +395,7 @@ const load_order = async (req, res) => {
     const order_details = await Order.find({}).populate("userId").exec();
     res.render("order", { order: order_details });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // order details
@@ -411,7 +409,7 @@ const order_details = async (req, res) => {
       .exec();
     res.render("orderdetails", { order: order_details });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -429,7 +427,7 @@ const status_update = async (req, res) => {
       res.send({ message: "0" });
     }
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -440,7 +438,7 @@ const load_coupon = async (req, res) => {
     const coupon_data = await Coupon.find({});
     res.render("coupon", { data: coupon_data });
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -450,7 +448,7 @@ const load_addcoupon = async (req, res) => {
     const category = await Category.find({})
     res.render("addcoupon",{category: category});
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 
@@ -471,7 +469,7 @@ const add_coupon = async (req, res) => {
     await new_coupon.save();
     res.redirect("/admin/coupon");
   } catch (error) {
-    console.log(error.message);
+      res.render('error',{error:error.message})
   }
 };
 // ------------------BANNER------------------
@@ -482,7 +480,7 @@ try {
 
   res.render('banner',{banner: Banner_data});
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
 }
 }
 // adding banner deatils and images as array in database
@@ -503,7 +501,7 @@ try {
   res.send({message:"something went worng"})
  }
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
 }
 }
 // this method is for deleting  selected banner by admin
@@ -517,7 +515,7 @@ try {
     res.send({message: "0"})
   }
 } catch (error) {
-  console.log(error.message);
+    res.render('error',{error:error.message})
 }
 }
 
