@@ -2,7 +2,7 @@ require("dotenv").config();
 
 // mongodb connection start
 const mongoose = require("mongoose");
-  mongoose.connect(process.env.dbconnect,{ useNewUrlParser: true })
+  mongoose.connect(process.env.MONGO_URL)
       .then((response) => {
           console.log("database connected successfully......");
       })
@@ -16,6 +16,7 @@ const mongoose = require("mongoose");
 
 const express = require("express");
 const app = express();
+const PORT = process.env.PORT || 3000
 
 app.use(express.static("public")); 
 
@@ -49,6 +50,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(3000, () => {  
+app.listen(PORT, () => {  
   console.log("Server started");
 });
