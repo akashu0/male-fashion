@@ -12,7 +12,7 @@ const bcryptjs = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
 const mongoose = require("mongoose");
-// const Razorpay =require("razorpay");
+const Razorpay =require("razorpay");
 
 // password decrypt
 const securepassword = async (password) => {
@@ -778,7 +778,7 @@ try {
   const order_data = await Order.findById({_id: orderid}).populate('address').populate('product.product_id')
 if(order_data){
   const amount = order_data.total
-//   var instance = new Razorpay({ key_id: 'rzp_test_9zuaMGnBpzoHQX', key_secret: 'wFBPfR1miTW0y7beeh8DWXLs' })
+  var instance = new Razorpay({ key_id: 'rzp_test_9zuaMGnBpzoHQX', key_secret: 'wFBPfR1miTW0y7beeh8DWXLs' })
  const order = await instance.orders.create({
     amount: amount * 100,
     currency: "INR",
