@@ -24,6 +24,7 @@ const securepassword = async (password) => {
   }
 };
 
+
 // ---------------Home PAGE---------
 
 const landing_Page = async (req, res) => {
